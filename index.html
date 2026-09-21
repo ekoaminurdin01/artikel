@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hanya Catatan Kecil</title>
+<meta name="description" content="Hanya Catatan Kecil: tulisan tentang filsafat, agama dan akal, politik, ekonomi, dan kisah manusia. Simple but Beautiful. Berpikir Kritis.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --kertas: #edf0ee;
+    --kertas-2: #e1e6e3;
+    --tinta: #16232b;
+    --tinta-lembut: #4a5a62;
+    --garis: #b9c4c0;
+    --aksen: #2b4a8b;
+    --font-judul: "Instrument Serif", "Iowan Old Style", Georgia, "Times New Roman", serif;
+    --font-teks: "Literata", Georgia, "Times New Roman", serif;
+    --lebar: 46rem;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --kertas: #12191d;
+      --kertas-2: #1a2429;
+      --tinta: #e6ecea;
+      --tinta-lembut: #9dadb3;
+      --garis: #33434a;
+      --aksen: #8fb0f0;
+    }
+  }
+  :root[data-theme="dark"] {
+    --kertas: #12191d;
+    --kertas-2: #1a2429;
+    --tinta: #e6ecea;
+    --tinta-lembut: #9dadb3;
+    --garis: #33434a;
+    --aksen: #8fb0f0;
+  }
+
+  *, *::before, *::after { box-sizing: inherit; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--kertas);
+    color: var(--tinta);
+    font-family: var(--font-teks);
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration-color: var(--garis); text-underline-offset: 0.2em; }
+  a:hover { color: var(--aksen); text-decoration-color: currentColor; }
+  :focus-visible { outline: 2px solid var(--aksen); outline-offset: 3px; border-radius: 2px; }
+  main:focus { outline: none; }
+  h1, h2, h3, p, ul, ol { margin: 0; }
+  ul, ol { padding: 0; list-style: none; }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  .lewati {
+    position: absolute; left: 1rem; top: -4rem; z-index: 10;
+    background: var(--tinta); color: var(--kertas); padding: 0.5rem 0.9rem;
+  }
+  .lewati:focus { top: 0.75rem; color: var(--kertas); }
+
+  .bungkus { width: 100%; max-width: var(--lebar); margin-inline: auto; padding-inline: 1.25rem; }
+  .lebar { max-width: 62rem; }
+
+  /* Kepala situs */
+  .kepala { border-top: 4px double var(--tinta); text-align: center; padding: 2.25rem 0 1.5rem; }
+  .judul-situs {
+    font-family: var(--font-judul);
+    font-weight: 400;
+    font-size: clamp(2.6rem, 10.5vw, 6rem);
+    line-height: 0.95;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  .judul-situs a { text-decoration: none; color: var(--tinta); }
+  .judul-situs a:hover { color: var(--tinta); }
+  .moto {
+    margin-top: 1.1rem;
+    display: flex; justify-content: center; align-items: center; flex-wrap: wrap;
+    font-style: italic; color: var(--tinta-lembut); font-size: 1rem;
+  }
+  .moto span { padding: 0 1rem; }
+  .moto span + span { border-left: 1px solid var(--garis); font-style: normal; color: var(--tinta); }
+  @media (prefers-reduced-motion: no-preference) {
+    .judul-situs { animation: mengendap 900ms cubic-bezier(.2,.7,.2,1) both; }
+    @keyframes mengendap {
+      from { letter-spacing: 0.05em; opacity: 0; }
+      to { letter-spacing: -0.015em; opacity: 1; }
+    }
+  }
+
+  /* Menu */
+  .menu { border-top: 1px solid var(--tinta); border-bottom: 1px solid var(--garis); }
+  .menu ul { display: flex; justify-content: center; flex-wrap: wrap; gap: 0 0.25rem; }
+  .menu a {
+    display: block; padding: 0.85rem 0.9rem 0.7rem;
+    text-decoration: none; font-size: 0.95rem; letter-spacing: 0.01em;
+    border-bottom: 2px solid transparent;
+  }
+  .menu a:hover { border-bottom-color: var(--garis); color: var(--tinta); }
+  .menu a[aria-current="page"] { border-bottom-color: var(--tinta); font-weight: 600; }
+
+  /* Umum */
+  .halaman { padding: 3rem 0 4rem; }
+  .judul-bagian {
+    font-family: var(--font-judul); font-weight: 400;
+    font-size: clamp(1.9rem, 5vw, 2.6rem); line-height: 1.1;
+    padding-bottom: 0.75rem; border-bottom: 1px solid var(--tinta);
+  }
+  .kat-tautan { font-size: 0.9rem; color: var(--tinta-lembut); text-decoration: none; font-style: italic; }
+  .kat-tautan:hover { color: var(--aksen); text-decoration: underline; }
+  .meta { color: var(--tinta-lembut); font-size: 0.9rem; }
+  .meta span + span { margin-left: 1rem; }
+
+  /* Daftar artikel */
+  .entri { padding: 1.75rem 0; border-bottom: 1px solid var(--garis); }
+  .entri h3 {
+    font-family: var(--font-judul); font-weight: 400;
+    font-size: clamp(1.75rem, 4.6vw, 2.4rem); line-height: 1.12; margin: 0.35rem 0 0.6rem;
+    text-wrap: balance;
+  }
+  .entri h3 a { text-decoration: none; }
+  .entri h3 a:hover { text-decoration: underline; text-decoration-thickness: 1px; }
+  .entri .ringkas { max-width: 60ch; margin-bottom: 0.7rem; }
+  .baca-lanjut { color: var(--aksen); font-weight: 600; text-decoration: none; }
+  .baca-lanjut:hover { text-decoration: underline; text-underline-offset: 0.2em; }
+  .tombol-baris { text-align: center; padding: 2.25rem 0 0.5rem; }
+  .tombol {
+    display: inline-block; padding: 0.75rem 1.6rem;
+    border: 1.5px solid var(--tinta); border-radius: 2px;
+    text-decoration: none; font-size: 0.98rem; color: var(--tinta);
+  }
+  .tombol:hover { background: var(--tinta); color: var(--kertas); }
+
+  /* Iklan */
+  .iklan {
+    margin: 2.5rem 0; padding: 0.6rem 0.9rem 1rem;
+    background: var(--kertas-2);
+    border: 1px dashed var(--garis);
+    text-align: center;
+  }
+  .iklan-label { display: block; font-size: 0.78rem; color: var(--tinta-lembut); margin-bottom: 0.5rem; }
+  .iklan-slot {
+    min-height: 6.5rem; display: grid; place-items: center;
+    color: var(--tinta-lembut); font-size: 0.85rem; font-style: italic;
+  }
+
+  /* Pilih kategori */
+  .kategori-daftar { display: grid; grid-template-columns: 1fr; margin-top: 0.25rem; }
+  @media (min-width: 40rem) {
+    .kategori-daftar { grid-template-columns: 1fr 1fr; column-gap: 2.5rem; }
+  }
+  .kategori-daftar a {
+    display: block; padding: 1.1rem 0; text-decoration: none;
+    border-bottom: 1px solid var(--garis);
+  }
+  .kategori-daftar strong {
+    display: block; font-family: var(--font-judul); font-weight: 400;
+    font-size: 1.6rem; line-height: 1.2;
+  }
+  .kategori-daftar a:hover strong { color: var(--aksen); text-decoration: underline; text-decoration-thickness: 1px; }
+  .kategori-daftar small { color: var(--tinta-lembut); font-size: 0.9rem; }
+  .pengantar { color: var(--tinta-lembut); margin: 1rem 0 0.75rem; max-width: 55ch; }
+
+  /* Artikel */
+  .artikel-kepala { padding-bottom: 1.5rem; border-bottom: 1px solid var(--tinta); margin-bottom: 2rem; }
+  .artikel-kepala h1 {
+    font-family: var(--font-judul); font-weight: 400;
+    font-size: clamp(2.3rem, 7.5vw, 3.9rem); line-height: 1.05; letter-spacing: -0.01em;
+    margin: 0.6rem 0 1.1rem; text-wrap: balance;
+  }
+  .oleh { font-size: 0.98rem; }
+  .oleh strong { font-weight: 600; }
+  .isi { max-width: 40rem; font-size: 1.1875rem; line-height: 1.8; }
+  .isi p + p { margin-top: 1.25em; }
+  .isi > p:first-of-type::first-letter {
+    font-family: var(--font-judul); float: left;
+    font-size: 4.6em; line-height: 0.8; padding: 0.06em 0.1em 0 0;
+  }
+  .isi .iklan { margin: 2.25rem 0; }
+  .penutup { margin-top: 2rem; font-style: italic; color: var(--tinta-lembut); }
+
+  .sebelum-sesudah {
+    display: grid; grid-template-columns: 1fr; gap: 0;
+    margin-top: 3rem; border-top: 1px solid var(--tinta);
+  }
+  @media (min-width: 40rem) { .sebelum-sesudah { grid-template-columns: 1fr 1fr; } }
+  .sebelum-sesudah a, .sebelum-sesudah .kosong { display: block; padding: 1.25rem 0; text-decoration: none; }
+  .sebelum-sesudah .kanan { text-align: right; }
+  @media (min-width: 40rem) {
+    .sebelum-sesudah .kanan { border-left: 1px solid var(--garis); padding-left: 1.25rem; }
+    .sebelum-sesudah .kiri { padding-right: 1.25rem; }
+  }
+  .sebelum-sesudah small { display: block; color: var(--tinta-lembut); font-size: 0.88rem; margin-bottom: 0.25rem; }
+  .sebelum-sesudah .jdl { font-family: var(--font-judul); font-size: 1.45rem; line-height: 1.2; }
+  .sebelum-sesudah a:hover .jdl { color: var(--aksen); text-decoration: underline; text-decoration-thickness: 1px; }
+  .sebelum-sesudah .kosong { color: var(--tinta-lembut); font-size: 0.9rem; }
+
+  .terkait { margin-top: 2.5rem; }
+  .terkait h2 { font-family: var(--font-judul); font-weight: 400; font-size: 1.7rem; margin-bottom: 0.5rem; }
+  .terkait li { border-bottom: 1px solid var(--garis); }
+  .terkait a { display: flex; justify-content: space-between; gap: 1rem; padding: 0.85rem 0; text-decoration: none; }
+  .terkait a:hover span:first-child { color: var(--aksen); text-decoration: underline; }
+  .terkait .meta { white-space: nowrap; }
+
+  .kosong-teks { padding: 2rem 0; color: var(--tinta-lembut); font-style: italic; }
+
+  /* Halaman teks */
+  .prosa { max-width: 40rem; }
+  .prosa h2 { font-family: var(--font-judul); font-weight: 400; font-size: 1.6rem; margin: 2rem 0 0.4rem; }
+  .prosa p, .prosa li { margin-top: 0.9rem; }
+  .prosa ul { list-style: disc; padding-left: 1.3rem; }
+  .catatan-draf {
+    margin-top: 2rem; padding: 0.8rem 1rem; font-size: 0.92rem;
+    border-left: 3px solid var(--aksen); background: var(--kertas-2); color: var(--tinta-lembut);
+  }
+
+  /* Kaki situs */
+  .kaki { border-top: 4px double var(--tinta); margin-top: 2rem; padding: 1.75rem 0 2.5rem; text-align: center; font-size: 0.95rem; }
+  .kaki ul { display: flex; justify-content: center; flex-wrap: wrap; }
+  .kaki li + li { border-left: 1px solid var(--garis); }
+  .kaki a { display: block; padding: 0.3rem 1rem; text-decoration: none; }
+  .kaki a:hover { text-decoration: underline; }
+  .kaki p { margin-top: 1rem; color: var(--tinta-lembut); font-size: 0.85rem; }
+
+  /* Pencarian */
+  .cari-baris { border-bottom: 1px solid var(--garis); }
+  .cari { display: flex; gap: 0.5rem; padding: 0.7rem 0; max-width: 26rem; margin-left: auto; }
+  .cari input {
+    flex: 1; min-width: 0; font: inherit; font-size: 0.95rem; color: var(--tinta);
+    background: transparent; border: 0; border-bottom: 1.5px solid var(--tinta);
+    padding: 0.35rem 0.1rem; border-radius: 0;
+  }
+  .cari input::placeholder { color: var(--tinta-lembut); }
+  .cari button {
+    font: inherit; font-size: 0.92rem; color: var(--tinta); background: transparent;
+    border: 1.5px solid var(--tinta); border-radius: 2px; padding: 0.3rem 1rem; cursor: pointer;
+  }
+  .cari button:hover { background: var(--tinta); color: var(--kertas); }
+  .hasil-info { color: var(--tinta-lembut); margin: 1rem 0 0.25rem; }
+
+  /* Langganan */
+  .langganan { margin: 3rem 0 0; padding: 1.75rem 0; border-top: 4px double var(--tinta); border-bottom: 1px solid var(--garis); }
+  .langganan h2 { font-family: var(--font-judul); font-weight: 400; font-size: clamp(1.7rem, 4.5vw, 2.2rem); line-height: 1.15; }
+  .langganan p { color: var(--tinta-lembut); margin: 0.5rem 0 1rem; max-width: 50ch; }
+  .langganan-form { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .langganan-form input[type="email"] {
+    flex: 1 1 14rem; min-width: 0; font: inherit; font-size: 1rem; color: var(--tinta);
+    background: var(--kertas); border: 1.5px solid var(--tinta); border-radius: 2px; padding: 0.65rem 0.8rem;
+  }
+  .langganan-form button {
+    font: inherit; font-size: 1rem; color: var(--kertas); background: var(--tinta);
+    border: 1.5px solid var(--tinta); border-radius: 2px; padding: 0.65rem 1.4rem; cursor: pointer;
+  }
+  .langganan-form button:hover { background: var(--aksen); border-color: var(--aksen); }
+  .langganan-status { min-height: 1.5em; margin: 0.75rem 0 0 !important; font-size: 0.92rem; color: var(--tinta) !important; }
+
+  @media (max-width: 30rem) {
+    .cari { max-width: none; }
+    .menu ul { justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; padding-inline: 0.75rem; }
+    .menu a { white-space: nowrap; }
+    .terkait a { flex-direction: column; gap: 0; }
+
+    /* Motto ditumpuk agar garis pemisah tidak tertinggal di awal baris */
+    .moto { flex-direction: column; gap: 0.15rem; }
+    .moto span { padding: 0; }
+    .moto span + span { border-left: 0; }
+
+    /* Footer ditumpuk dengan area sentuh lebih lega */
+    .kaki ul { flex-direction: column; align-items: center; }
+    .kaki li + li { border-left: 0; }
+    .kaki a { padding: 0.7rem 1rem; }
+  }
+</style>
+</head>
+<body>
+<a class="lewati" href="#utama" id="lewati">Langsung ke isi</a>
+
+<header class="kepala">
+  <div class="bungkus lebar">
+    <p class="judul-situs"><a href="#/">Hanya Catatan Kecil</a></p>
+    <p class="moto"><span>Simple but Beautiful</span><span>Berpikir Kritis</span></p>
+  </div>
+</header>
+
+<nav class="menu" aria-label="Menu utama">
+  <div class="bungkus lebar">
+    <ul id="menu-utama"></ul>
+  </div>
+</nav>
+
+<div class="cari-baris">
+  <div class="bungkus lebar">
+    <form class="cari" id="form-cari" role="search">
+      <label class="sr-only" for="kolom-cari">Cari tulisan</label>
+      <input id="kolom-cari" type="search" placeholder="Cari tulisan" autocomplete="off">
+      <button type="submit">Cari</button>
+    </form>
+  </div>
+</div>
+
+<main id="utama" tabindex="-1">
+  <div class="bungkus halaman" id="isi-halaman"></div>
+</main>
+
+<footer class="kaki">
+  <div class="bungkus lebar">
+    <ul aria-label="Informasi situs">
+      <li><a href="#/tentang">Tentang HCK</a></li>
+      <li><a href="#/privasi">Kebijakan Privasi</a></li>
+      <li><a href="#/disclaimer">Disclaimer</a></li>
+    </ul>
+    <p>&copy; 2026 Hanya Catatan Kecil</p>
+  </div>
+</footer>
+
+<script src="firebase-config.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var NAMA_SITUS = "Hanya Catatan Kecil";
+  var PENULIS = "Yahya Hendiana";
+
+  /* Formulir langganan.
+     Situs statis tidak bisa menyimpan surel sendiri, jadi hubungkan ke layanan
+     buletin (misalnya Buttondown, Mailchimp, atau MailerLite). Isi LANGGANAN_URL
+     dengan alamat "form action" dari layanan itu, dan LANGGANAN_KOLOM dengan nama
+     kolom surelnya (Buttondown: "email", Mailchimp: "EMAIL").
+     Selama LANGGANAN_URL masih kosong, formulir hanya menampilkan pemberitahuan. */
+  var LANGGANAN_URL = "";
+  var LANGGANAN_KOLOM = "email";
+
+  /* ---------------------------------------------------------------
+     DATA. Isi tulisan di bawah ini adalah contoh.
+     Ganti dengan tulisan Anda: tambahkan objek baru di daftar ARTIKEL.
+     Kategori yang valid: filsafat, agama, politik, ekonomi, human.
+     Urutkan dari yang terbaru ke yang terlama.
+     --------------------------------------------------------------- */
+  var KATEGORI = [
+    { id: "filsafat", nama: "Filsafat", desk: "Pertanyaan tentang hidup, makna, dan cara berpikir." },
+    { id: "agama", nama: "Agama & Akal", desk: "Iman dan nalar yang saling menguji, bukan saling meniadakan." },
+    { id: "politik", nama: "Politik", desk: "Kekuasaan, warga, dan cara kita menilainya." },
+    { id: "ekonomi", nama: "Ekonomi", desk: "Uang, kerja, dan pilihan sehari-hari." },
+    { id: "human", nama: "Human Interest", desk: "Kisah kecil dari orang-orang biasa." }
+  ];
+
+  var ARTIKEL = [
+    {
+      slug: "manusia-baik-tanpa-takut-tuhan",
+      judul: "Apakah Manusia Bisa Baik Tanpa Takut kepada Tuhan?",
+      kategori: "filsafat",
+      tanggal: "2026-09-18",
+      ringkas: "Pertanyaan ini sering diajukan dengan nada menuduh dari dua arah. Mungkin yang perlu kita tanyakan adalah apa yang menopang kebaikan ketika tidak ada yang melihat.",
+      isi: [
+        "Pertanyaan ini sering diajukan dengan nada menuduh, dari dua arah sekaligus. Sebagian orang beriman khawatir moral akan runtuh tanpa rasa takut kepada Tuhan. Sebagian orang tidak beriman merasa tersinggung karena kebaikan mereka dianggap tidak sah.",
+        "Mari mulai dari hal yang bisa kita amati. Ada orang religius yang jujur dan dermawan, ada pula yang culas. Ada orang tanpa agama yang setia menjaga janji, dan ada yang sama sekali tidak. Jika ketakutan kepada Tuhan adalah satu-satunya sumber kebaikan, sebaran seperti ini seharusnya tidak ada.",
+        "Namun jawaban itu terlalu cepat. Yang perlu ditanyakan bukan hanya apakah orang bisa baik, tetapi apa yang menopang kebaikan itu ketika tidak ada yang melihat. Rasa takut pada hukuman mungkin menahan tangan, tetapi belum tentu menumbuhkan kepedulian. Sebaliknya, empati tanpa kerangka nilai bisa berhenti pada orang-orang yang kita sukai saja.",
+        "Banyak tradisi agama sendiri tidak mengajarkan kebaikan semata sebagai urusan takut. Cinta, syukur, dan tanggung jawab tumbuh berdampingan dengan rasa hormat. Bagi banyak orang beriman, takut kepada Tuhan lebih dekat pada kesadaran bahwa perbuatan ada pertanggungjawabannya, ketimbang pada ketakutan terhadap ancaman.",
+        "Jadi jawabannya mungkin begini: manusia bisa baik dengan atau tanpa takut kepada Tuhan, tetapi dasar yang dipakai akan menentukan seberapa luas dan seberapa tahan lama kebaikan itu. Pertanyaan yang lebih jujur untuk kita masing-masing adalah, apa yang membuat saya tetap baik ketika tidak ada yang memaksa?"
+      ]
+    },
+    {
+      slug: "ketika-wahyu-bertemu-akal",
+      judul: "Ketika Wahyu Bertemu Akal",
+      kategori: "agama",
+      tanggal: "2026-09-12",
+      ringkas: "Wahyu dan akal sering digambarkan berhadapan, padahal orang yang menjalani keduanya tahu bahwa batasnya tidak serapi itu.",
+      isi: [
+        "Wahyu dan akal sering digambarkan sebagai dua pihak yang berhadapan. Yang satu datang dari atas, yang lain tumbuh dari dalam. Gambaran itu rapi, tetapi jarang cocok dengan pengalaman orang yang benar-benar menjalani keduanya.",
+        "Siapa pun yang membaca teks suci harus menafsirkan. Menafsirkan berarti memakai bahasa, konteks, logika, dan pengetahuan yang sudah ada di kepala. Dengan kata lain, akal sudah bekerja bahkan sebelum kita sempat mengatakan bahwa kita hanya patuh.",
+        "Sebaliknya, akal juga tidak berdiri di ruang hampa. Ia bertumpu pada asumsi yang tidak sepenuhnya ia buktikan sendiri, misalnya bahwa dunia bisa dipahami atau bahwa ingatan kita cukup dapat dipercaya. Ada iman kecil di dalam nalar.",
+        "Ketegangan muncul ketika salah satunya mengklaim wilayah yang bukan miliknya. Akal yang menuntut bukti empiris untuk soal makna terdalam akan kecewa. Wahyu yang dipakai untuk menjawab pertanyaan teknis tentang alam akan terus berbenturan dengan temuan baru.",
+        "Barangkali sikap yang paling jujur adalah membiarkan keduanya saling menguji dengan rendah hati: bertanya pada tafsir kita sendiri, dan bertanya juga pada batas cara berpikir kita."
+      ]
+    },
+    {
+      slug: "penderitaan-menjadi-pertanyaan",
+      judul: "Penderitaan Menjadi Pertanyaan",
+      kategori: "filsafat",
+      tanggal: "2026-09-05",
+      ringkas: "Penderitaan datang sebagai kabar, bukan sebagai bahan diskusi. Baru kemudian ia berubah menjadi pertanyaan.",
+      isi: [
+        "Penderitaan jarang datang sebagai bahan diskusi. Ia datang sebagai kabar dari rumah sakit, sebagai pintu yang tertutup, sebagai kursi kosong di meja makan. Baru kemudian, sering berbulan-bulan sesudahnya, ia berubah menjadi pertanyaan: mengapa ini terjadi, dan mengapa pada saya?",
+        "Para filsuf sudah lama mencoba menjawab. Ada yang melihat penderitaan sebagai akibat dari pilihan, ada yang menganggapnya bagian tak terhindarkan dari hidup, ada yang mencari makna di dalamnya. Tiap jawaban menolong sebagian orang dan melukai sebagian lainnya.",
+        "Masalahnya, jawaban yang benar secara logika belum tentu terasa benar bagi orang yang sedang berduka. Menyebut penderitaan sebagai pelajaran, misalnya, bisa terdengar seperti pembenaran atas rasa sakit yang belum selesai.",
+        "Mungkin karena itu pertanyaan tentang penderitaan perlu dua bentuk. Bentuk pertama bersifat teoretis: mengapa dunia begini. Bentuk kedua bersifat manusiawi: apa yang bisa kita lakukan bagi orang yang sedang menanggungnya. Yang kedua sering lebih mendesak, dan tidak perlu menunggu yang pertama selesai."
+      ]
+    },
+    {
+      slug: "suara-yang-tidak-terhitung",
+      judul: "Suara yang Tidak Terhitung",
+      kategori: "politik",
+      tanggal: "2026-08-29",
+      ringkas: "Tidak semua pendapat warga masuk ke dalam angka. Yang tidak terhitung tetap ikut menentukan arah.",
+      isi: [
+        "Dalam politik, yang terhitung biasanya yang bisa dihitung: suara di kotak pemilihan, jumlah pengikut, hasil survei. Padahal ada banyak pendapat warga yang tidak pernah masuk ke angka mana pun, seperti obrolan di warung, keluhan di grup pesan, atau keputusan diam-diam untuk tidak peduli lagi.",
+        "Suara yang tidak terhitung bukan berarti tidak berpengaruh. Kebijakan sering lahir dari perkiraan pejabat tentang apa yang diinginkan orang banyak, dan perkiraan itu dibentuk oleh siapa yang paling terdengar. Yang paling keras belum tentu yang paling banyak.",
+        "Karena itu, berpikir kritis tentang politik bukan hanya soal menilai janji, tetapi juga bertanya siapa yang tidak sempat bicara, dan bagaimana kita bisa mendengar mereka."
+      ]
+    },
+    {
+      slug: "harga-sebuah-waktu-luang",
+      judul: "Harga Sebuah Waktu Luang",
+      kategori: "ekonomi",
+      tanggal: "2026-08-21",
+      ringkas: "Waktu luang jarang muncul di catatan keuangan, tetapi ia termasuk hal yang paling mahal untuk dibeli.",
+      isi: [
+        "Kita terbiasa menghitung harga barang, tetapi jarang menghitung harga waktu luang. Ia tidak muncul di struk belanja dan tidak tercatat di laporan keuangan rumah tangga, padahal ia sering menjadi hal pertama yang dikorbankan ketika penghasilan terasa kurang.",
+        "Bagi sebagian orang, waktu luang adalah sesuatu yang bisa dibeli: dengan membayar orang lain mengerjakan hal-hal yang memakan waktu. Bagi sebagian lain, ia justru menyusut ketika biaya hidup naik dan pekerjaan tambahan menjadi keharusan.",
+        "Pertanyaannya, apa yang kita anggap cukup? Pertanyaan itu terdengar sederhana, tetapi jawabannya menentukan bagaimana kita memilih pekerjaan, mengatur pengeluaran, dan menilai keberhasilan orang lain."
+      ]
+    },
+    {
+      slug: "tukang-tambal-ban-di-ujung-gang",
+      judul: "Tukang Tambal Ban di Ujung Gang",
+      kategori: "human",
+      tanggal: "2026-08-14",
+      ringkas: "Sebuah bangku plastik, sebuah pompa tangan, dan cara seorang tukang tambal ban memperlakukan setiap pelanggan.",
+      isi: [
+        "Di ujung gang, ada bangku plastik biru dan sebuah pompa tangan yang gagangnya sudah aus. Di situlah seorang tukang tambal ban duduk setiap pagi, jauh sebelum toko-toko di jalan besar membuka pintu.",
+        "Ia mengerjakan setiap ban seolah-olah itu ban satu-satunya hari itu. Tidak terburu-buru, tidak menyebut harga sebelum selesai memeriksa. Kalau lubangnya sudah tidak bisa ditambal, ia berkata jujur, meski itu berarti ia tidak mendapat uang.",
+        "Kita sering mencari teladan di tempat yang tinggi. Kadang teladan itu justru duduk di ujung gang, menunggu ban yang bocor."
+      ]
+    }
+  ];
+
+  /* ---------------------------------------------------------------
+     Bantuan kecil
+     --------------------------------------------------------------- */
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function kat(id) {
+    for (var i = 0; i < KATEGORI.length; i++) if (KATEGORI[i].id === id) return KATEGORI[i];
+    return null;
+  }
+  function tgl(iso) {
+    var d = new Date(iso + "T00:00:00Z");
+    try {
+      return d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+    } catch (e) { return iso; }
+  }
+  function menit(a) {
+    var kata = a.isi.join(" ").split(/\s+/).length;
+    return Math.max(1, Math.round(kata / 200)) + " menit baca";
+  }
+  function cari(slug) {
+    for (var i = 0; i < ARTIKEL.length; i++) if (ARTIKEL[i].slug === slug) return i;
+    return -1;
+  }
+  function jumlahKategori(id) {
+    return ARTIKEL.filter(function (a) { return a.kategori === id; }).length;
+  }
+
+  /* Ruang iklan. Untuk memasang AdSense, tempel kode unit iklan Anda
+     di dalam .iklan-slot dan hapus teks placeholder. */
+  function iklan() {
+    return '<aside class="iklan" aria-label="Iklan">' +
+      '<span class="iklan-label">Iklan</span>' +
+      '<div class="iklan-slot"><!-- Tempel kode unit iklan AdSense di sini -->Ruang iklan</div>' +
+      '</aside>';
+  }
+
+  function langganan() {
+    var aksi = LANGGANAN_URL ? ' action="' + esc(LANGGANAN_URL) + '" method="post" target="_blank"' : '';
+    return '<section class="langganan" aria-labelledby="judul-langganan">' +
+      '<h2 id="judul-langganan">Tulisan baru langsung ke surelmu</h2>' +
+      '<p>Satu surel setiap ada tulisan baru. Kamu bisa berhenti kapan saja.</p>' +
+      '<form class="langganan-form"' + aksi + '>' +
+        '<label class="sr-only" for="surel-langganan">Alamat surel</label>' +
+        '<input id="surel-langganan" type="email" name="' + esc(LANGGANAN_KOLOM) + '" placeholder="nama@contoh.com" autocomplete="email" required>' +
+        '<button type="submit">Berlangganan</button>' +
+      '</form>' +
+      '<p class="langganan-status" role="status" aria-live="polite"></p>' +
+      '</section>';
+  }
+
+  /* ---------------------------------------------------------------
+     Tampilan
+     --------------------------------------------------------------- */
+  function entri(a) {
+    var k = kat(a.kategori);
+    return '<article class="entri">' +
+      '<a class="kat-tautan" href="#/kategori/' + k.id + '">' + esc(k.nama) + '</a>' +
+      '<h3><a href="#/artikel/' + a.slug + '">' + esc(a.judul) + '</a></h3>' +
+      '<p class="ringkas">' + esc(a.ringkas) + '</p>' +
+      '<p class="meta"><span>' + tgl(a.tanggal) + '</span>' +
+        '<span><a class="baca-lanjut" href="#/artikel/' + a.slug + '" aria-label="Baca selengkapnya: ' + esc(a.judul) + '">Baca Selengkapnya</a></span></p>' +
+      '</article>';
+  }
+
+  function pilihKategori() {
+    var html = '<section aria-labelledby="pilih-kat">' +
+      '<h2 class="judul-bagian" id="pilih-kat">Pilih tulisan berdasarkan kategori</h2>' +
+      '<ul class="kategori-daftar">';
+    KATEGORI.forEach(function (k) {
+      var n = jumlahKategori(k.id);
+      html += '<li><a href="#/kategori/' + k.id + '"><strong>' + esc(k.nama) + '</strong>' +
+        '<small>' + esc(k.desk) + ' ' + n + ' tulisan.</small></a></li>';
+    });
+    return html + '</ul></section>';
+  }
+
+  function tampilBeranda() {
+    var html = '<h1 class="sr-only">' + NAMA_SITUS + '</h1>' +
+      '<section aria-labelledby="terbaru">' +
+      '<h2 class="judul-bagian" id="terbaru">Artikel Terbaru</h2>';
+    ARTIKEL.slice(0, 3).forEach(function (a) { html += entri(a); });
+    if (ARTIKEL.length === 0) {
+      html += '<p class="kosong-teks">Belum ada tulisan yang terbit. Silakan kembali lagi nanti.</p></section>' + langganan();
+      return { html: html, judul: NAMA_SITUS, menu: "beranda" };
+    }
+    html += '<div class="tombol-baris"><a class="tombol" href="#/semua">Baca selengkapnya</a></div>' +
+      '</section>' + iklan() + pilihKategori() + langganan();
+    return { html: html, judul: NAMA_SITUS, menu: "beranda" };
+  }
+
+  function tampilCari(q) {
+    q = (q || "").trim();
+    var kunci = q.toLowerCase().split(/\s+/).filter(Boolean);
+    var hasil = kunci.length ? ARTIKEL.filter(function (a) {
+      var teks = (a.judul + " " + a.ringkas + " " + a.isi.join(" ") + " " + kat(a.kategori).nama).toLowerCase();
+      return kunci.every(function (k) { return teks.indexOf(k) > -1; });
+    }) : [];
+
+    var html = '<h1 class="judul-bagian">Hasil pencarian</h1>';
+    if (!kunci.length) {
+      html += '<p class="kosong-teks">Ketik kata kunci di kolom pencarian, misalnya "akal" atau "penderitaan".</p>';
+    } else if (hasil.length === 0) {
+      html += '<p class="kosong-teks">Tidak ada tulisan yang memuat "' + esc(q) + '". Coba kata yang lebih umum, atau pilih kategori di menu.</p>';
+    } else {
+      html += '<p class="hasil-info">' + hasil.length + ' tulisan memuat "' + esc(q) + '".</p>';
+      hasil.forEach(function (a) { html += entri(a); });
+    }
+    return { html: html, judul: "Cari: " + q + " | " + NAMA_SITUS, menu: "", kueri: q };
+  }
+
+  function tampilSemua() {
+    var html = '<h1 class="judul-bagian">Semua Tulisan</h1>';
+    if (ARTIKEL.length === 0) html += '<p class="kosong-teks">Belum ada tulisan yang terbit.</p>';
+    ARTIKEL.forEach(function (a) { html += entri(a); });
+    html += iklan() + pilihKategori();
+    return { html: html, judul: "Semua Tulisan", menu: "" };
+  }
+
+  function tampilKategori(id) {
+    var k = kat(id);
+    if (!k) return tampilBeranda();
+    var daftar = ARTIKEL.filter(function (a) { return a.kategori === id; });
+    var html = '<h1 class="judul-bagian">' + esc(k.nama) + '</h1>' +
+      '<p class="pengantar">' + esc(k.desk) + '</p>';
+    if (daftar.length === 0) {
+      html += '<p class="kosong-teks">Belum ada tulisan di kategori ini. Coba lihat kategori lain di menu atas.</p>';
+    } else {
+      daftar.forEach(function (a) { html += entri(a); });
+    }
+    return { html: html, judul: k.nama, menu: id };
+  }
+
+  function tampilArtikel(slug) {
+    var i = cari(slug);
+    if (i < 0) return tampilBeranda();
+    var a = ARTIKEL[i];
+    var k = kat(a.kategori);
+
+    var paragraf = "";
+    var posisiIklan = a.isi.length > 2 ? 2 : a.isi.length;
+    a.isi.forEach(function (p, n) {
+      if (n === posisiIklan) paragraf += iklan();
+      paragraf += "<p>" + esc(p) + "</p>";
+    });
+    if (posisiIklan === a.isi.length) paragraf += iklan();
+
+    var lebih = ARTIKEL[i + 1];   /* lebih lama */
+    var baru = ARTIKEL[i - 1];    /* lebih baru */
+
+    var nav = '<nav class="sebelum-sesudah" aria-label="Navigasi artikel">';
+    nav += lebih
+      ? '<a class="kiri" href="#/artikel/' + lebih.slug + '" rel="prev"><small>Artikel sebelumnya &larr;</small><span class="jdl">' + esc(lebih.judul) + '</span></a>'
+      : '<span class="kosong kiri">Ini tulisan paling awal.</span>';
+    nav += baru
+      ? '<a class="kanan" href="#/artikel/' + baru.slug + '" rel="next"><small>&rarr; Artikel berikutnya</small><span class="jdl">' + esc(baru.judul) + '</span></a>'
+      : '<span class="kosong kanan">Ini tulisan terbaru.</span>';
+    nav += '</nav>';
+
+    var terkait = ARTIKEL.filter(function (x) { return x.slug !== a.slug; })
+      .sort(function (x, y) {
+        var sx = x.kategori === a.kategori ? 0 : 1;
+        var sy = y.kategori === a.kategori ? 0 : 1;
+        return sx - sy;
+      }).slice(0, 3);
+    var tk = '<section class="terkait" aria-labelledby="terkait"><h2 id="terkait">Artikel terkait</h2><ul>';
+    terkait.forEach(function (x) {
+      tk += '<li><a href="#/artikel/' + x.slug + '"><span>' + esc(x.judul) + '</span>' +
+        '<span class="meta">' + esc(kat(x.kategori).nama) + '</span></a></li>';
+    });
+    tk += '</ul></section>';
+
+    var html = '<article>' +
+      '<header class="artikel-kepala">' +
+        '<a class="kat-tautan" href="#/kategori/' + k.id + '">' + esc(k.nama) + '</a>' +
+        '<h1>' + esc(a.judul) + '</h1>' +
+        '<p class="oleh"><span class="meta">' + NAMA_SITUS + ' oleh </span><strong>' + esc(PENULIS) + '</strong></p>' +
+        '<p class="meta"><span>' + tgl(a.tanggal) + '</span><span>' + menit(a) + '</span></p>' +
+      '</header>' +
+      '<div class="isi">' + paragraf + '</div>' +
+      '</article>' + nav + tk + langganan();
+    return { html: html, judul: a.judul + " | " + NAMA_SITUS, menu: k.id };
+  }
+
+  function tampilTentang() {
+    return { judul: "Tentang HCK", menu: "", html:
+      '<div class="prosa"><h1 class="judul-bagian">Tentang HCK</h1>' +
+      '<p>Hanya Catatan Kecil (HCK) adalah ruang untuk menulis pelan-pelan tentang hal-hal besar: filsafat, hubungan agama dan akal, politik, ekonomi, dan kisah manusia sehari-hari.</p>' +
+      '<p>Tulisan di sini tidak berusaha memberi kata akhir. Tujuannya sederhana, yaitu mengajak pembaca berpikir kritis, memeriksa alasan di balik keyakinan, dan tetap ramah kepada orang yang berpendapat lain.</p>' +
+      '<p>Semua tulisan ditulis oleh ' + esc(PENULIS) + '.</p></div>' };
+  }
+
+  function tampilPrivasi() {
+    return { judul: "Kebijakan Privasi", menu: "", html:
+      '<div class="prosa"><h1 class="judul-bagian">Kebijakan Privasi</h1>' +
+      '<p>Halaman ini menjelaskan bagaimana Hanya Catatan Kecil memperlakukan informasi pengunjung.</p>' +
+      '<h2>Informasi yang dikumpulkan</h2>' +
+      '<p>Situs ini tidak meminta Anda membuat akun atau mengisi data pribadi untuk membaca. Server dan layanan analitik dapat mencatat data teknis umum, seperti jenis peramban, halaman yang dibuka, dan waktu kunjungan.</p>' +
+      '<h2>Cookie dan iklan</h2>' +
+      '<p>Situs ini dapat menampilkan iklan dari Google AdSense. Google dan mitranya dapat memakai cookie untuk menayangkan iklan berdasarkan kunjungan Anda ke situs ini dan situs lain. Anda dapat mengatur atau menonaktifkan iklan yang dipersonalisasi melalui pengaturan iklan Google, dan mengatur cookie melalui peramban Anda.</p>' +
+      '<h2>Tautan ke situs lain</h2>' +
+      '<p>Tulisan dapat memuat tautan ke situs lain. HCK tidak bertanggung jawab atas kebijakan privasi maupun isi situs tersebut.</p>' +
+      '<h2>Perubahan kebijakan</h2>' +
+      '<p>Kebijakan ini dapat diperbarui sewaktu-waktu. Perubahan akan ditampilkan di halaman ini.</p>' +
+      '<h2>Kontak</h2>' +
+      '<p>Pertanyaan tentang privasi dapat dikirim ke alamat surel pengelola: [isi alamat surel Anda di sini].</p>' +
+      '<p class="catatan-draf">Ini naskah awal untuk dilengkapi. Sesuaikan dengan layanan yang benar-benar Anda pakai, dan pertimbangkan meminta nasihat hukum sebelum situs diterbitkan.</p></div>' };
+  }
+
+  function tampilDisclaimer() {
+    return { judul: "Disclaimer", menu: "", html:
+      '<div class="prosa"><h1 class="judul-bagian">Disclaimer</h1>' +
+      '<p>Tulisan di Hanya Catatan Kecil adalah pandangan pribadi penulis dan dimaksudkan sebagai bahan renungan serta diskusi.</p>' +
+      '<ul>' +
+      '<li>Isi situs bukan nasihat hukum, keuangan, medis, atau keagamaan yang mengikat.</li>' +
+      '<li>Penulis berusaha akurat, tetapi tidak menjamin bahwa semua informasi selalu lengkap atau terbaru.</li>' +
+      '<li>Iklan yang tampil disediakan pihak ketiga dan tidak selalu mencerminkan pandangan penulis.</li>' +
+      '<li>Tanggapan dan kritik yang santun selalu diterima. Jika ada kekeliruan, penulis akan memperbaikinya.</li>' +
+      '</ul></div>' };
+  }
+
+  /* ---------------------------------------------------------------
+     Menu dan routing
+     --------------------------------------------------------------- */
+  var MENU = [{ id: "beranda", nama: "Beranda", href: "#/" }].concat(
+    KATEGORI.map(function (k) { return { id: k.id, nama: k.nama, href: "#/kategori/" + k.id }; })
+  );
+
+  function gambarMenu(aktif) {
+    var el = document.getElementById("menu-utama");
+    el.innerHTML = MENU.map(function (m) {
+      return '<li><a href="' + m.href + '"' + (m.id === aktif ? ' aria-current="page"' : '') + '>' + esc(m.nama) + '</a></li>';
+    }).join("");
+  }
+
+  /* ---------------------------------------------------------------
+     Firebase. Bila firebase-config.js sudah diisi, tulisan diambil dari
+     Firestore (koleksi "artikel", hanya yang berstatus "terbit") dan
+     menggantikan contoh bawaan di atas. Bila kosong atau gagal dimuat,
+     situs tetap tampil dengan contoh bawaan.
+     --------------------------------------------------------------- */
+  var memuat = !!(window.HCK_FIREBASE && window.HCK_FIREBASE.apiKey);
+
+  function muatDariFirebase() {
+    if (!memuat) return;
+    var V = "https://www.gstatic.com/firebasejs/10.12.2/";
+    Promise.all([import(V + "firebase-app.js"), import(V + "firebase-firestore.js")])
+      .then(function (m) {
+        var db = m[1].getFirestore(m[0].initializeApp(window.HCK_FIREBASE));
+        return m[1].getDocs(m[1].query(m[1].collection(db, "artikel"), m[1].where("status", "==", "terbit")));
+      })
+      .then(function (snap) {
+        var daftar = [];
+        snap.forEach(function (d) {
+          var x = d.data();
+          if (!kat(x.kategori) || !Array.isArray(x.isi)) return;
+          daftar.push({ slug: d.id, judul: x.judul || "", kategori: x.kategori, tanggal: x.tanggal || "", ringkas: x.ringkas || "", isi: x.isi });
+        });
+        daftar.sort(function (a, b) { return a.tanggal < b.tanggal ? 1 : a.tanggal > b.tanggal ? -1 : 0; });
+        ARTIKEL.length = 0;
+        daftar.forEach(function (a) { ARTIKEL.push(a); });
+      })
+      .catch(function (e) { console.warn("Firebase gagal dimuat, memakai contoh bawaan.", e); })
+      .then(function () { memuat = false; rute(); });
+  }
+
+  var pertama = true;
+  function rute() {
+    if (memuat) {
+      gambarMenu("");
+      document.getElementById("isi-halaman").innerHTML = '<p class="kosong-teks">Memuat tulisan…</p>';
+      return;
+    }
+    var h = (location.hash || "#/").replace(/^#\/?/, "");
+    var bagian = h.split("/");
+    var hasil;
+    switch (bagian[0]) {
+      case "artikel": hasil = tampilArtikel(bagian[1]); break;
+      case "kategori": hasil = tampilKategori(bagian[1]); break;
+      case "semua": hasil = tampilSemua(); break;
+      case "cari":
+        var kueri = "";
+        try { kueri = decodeURIComponent(bagian.slice(1).join("/")); } catch (e) { kueri = bagian.slice(1).join("/"); }
+        hasil = tampilCari(kueri);
+        break;
+      case "tentang": hasil = tampilTentang(); break;
+      case "privasi": hasil = tampilPrivasi(); break;
+      case "disclaimer": hasil = tampilDisclaimer(); break;
+      default: hasil = tampilBeranda();
+    }
+    document.getElementById("isi-halaman").innerHTML = hasil.html;
+    document.title = hasil.judul;
+    gambarMenu(hasil.menu);
+    document.getElementById("kolom-cari").value = hasil.kueri || "";
+    window.scrollTo(0, 0);
+    if (!pertama) document.getElementById("utama").focus({ preventScroll: true });
+    pertama = false;
+  }
+
+  document.getElementById("lewati").addEventListener("click", function (e) {
+    e.preventDefault();
+    document.getElementById("utama").focus();
+  });
+  document.getElementById("form-cari").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var kolom = document.getElementById("kolom-cari");
+    var q = kolom.value.trim();
+    if (!q) { kolom.focus(); return; }
+    var tujuan = "#/cari/" + encodeURIComponent(q);
+    if (location.hash === tujuan) rute(); else location.hash = tujuan;
+  });
+
+  document.addEventListener("submit", function (e) {
+    var f = e.target;
+    if (!f.classList || !f.classList.contains("langganan-form")) return;
+    var status = f.parentNode.querySelector(".langganan-status");
+    if (!LANGGANAN_URL) {
+      e.preventDefault();
+      /* Pesan ini tampil selama LANGGANAN_URL belum diisi. */
+      status.textContent = "Langganan surel belum dibuka. Silakan kembali lagi nanti.";
+    } else {
+      status.textContent = "Terima kasih. Cek surelmu untuk konfirmasi langganan.";
+    }
+  });
+
+  window.addEventListener("hashchange", rute);
+  rute();
+  muatDariFirebase();
+})();
+</script>
+</body>
+</html>

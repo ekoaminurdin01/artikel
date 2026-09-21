@@ -1,0 +1,26 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Ganti dengan UID akun admin Anda.
+    // Lihat di Firebase Console > Authentication > Users > kolom "User UID".
+    // Jika belum tahu, masuk dulu ke admin.html: UID akan ditampilkan di layar.
+    function admin() {
+      return request.auth != null
+          && request.auth.uid == "HPh6IoMkNiejaJQxHdZX2kOZKKv1";
+    }
+
+    match /artikel/{slug} {
+      // Admin boleh membaca semua. Pengunjung hanya boleh membaca yang berstatus terbit.
+      allow read: if admin() || resource.data.status == "terbit";
+
+      // Hanya admin yang boleh menambah, mengubah, dan menghapus.
+      allow create, update: if admin()
+          && request.resource.data.judul is string
+          && request.resource.data.isi is list
+          && request.resource.data.status in ["terbit", "draf"];
+      allow delete: if admin();
+    }
+  }
+}

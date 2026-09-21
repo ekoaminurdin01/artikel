@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin | Hanya Catatan Kecil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --kertas: #edf0ee;
+    --kertas-2: #e1e6e3;
+    --tinta: #16232b;
+    --tinta-lembut: #4a5a62;
+    --garis: #b9c4c0;
+    --aksen: #2b4a8b;
+    --bahaya: #a12d2d;
+    --sukses: #1f6b45;
+    --font-judul: "Instrument Serif", "Iowan Old Style", Georgia, "Times New Roman", serif;
+    --font-teks: "Literata", Georgia, "Times New Roman", serif;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --kertas: #12191d;
+      --kertas-2: #1a2429;
+      --tinta: #e6ecea;
+      --tinta-lembut: #9dadb3;
+      --garis: #33434a;
+      --aksen: #8fb0f0;
+      --bahaya: #f19a9a;
+      --sukses: #7fd0a4;
+    }
+  }
+
+  *, *::before, *::after { box-sizing: inherit; }
+  [hidden] { display: none !important; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--kertas); color: var(--tinta);
+    font-family: var(--font-teks); font-size: 1rem; line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, p, ul, ol { margin: 0; }
+  ul, ol { padding: 0; list-style: none; }
+  a { color: inherit; text-decoration-color: var(--garis); text-underline-offset: 0.2em; }
+  a:hover { color: var(--aksen); }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--aksen); outline-offset: 3px; border-radius: 2px; }
+  main:focus { outline: none; }
+
+  .tengah { text-align: center; color: var(--tinta-lembut); padding: 4rem 1rem; font-style: italic; }
+
+  /* Bilah atas */
+  .bar { border-top: 4px double var(--tinta); border-bottom: 1px solid var(--tinta); }
+  .bar-dalam {
+    max-width: 62rem; margin-inline: auto; padding: 0.85rem 1.25rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 0.75rem 1.5rem; flex-wrap: wrap;
+  }
+  .logo { font-family: var(--font-judul); font-size: 1.9rem; line-height: 1; text-decoration: none; }
+  .logo em { color: var(--tinta-lembut); }
+  .bar-kanan { display: flex; align-items: center; gap: 0.5rem 1rem; flex-wrap: wrap; font-size: 0.92rem; }
+  .email { color: var(--tinta-lembut); overflow-wrap: anywhere; }
+
+  .wrap { max-width: 62rem; margin-inline: auto; padding: 2rem 1.25rem 4rem; }
+
+  /* Tombol */
+  .tbl {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 2.6rem; padding: 0.5rem 1.15rem;
+    border: 1.5px solid var(--tinta); border-radius: 2px; background: transparent;
+    font-size: 0.95rem; line-height: 1.2; text-decoration: none; cursor: pointer;
+  }
+  .tbl:hover { background: var(--tinta); color: var(--kertas); }
+  .tbl-utama { background: var(--tinta); color: var(--kertas); }
+  .tbl-utama:hover { background: var(--aksen); border-color: var(--aksen); color: var(--kertas); }
+  .tbl-bahaya { border-color: var(--bahaya); color: var(--bahaya); }
+  .tbl-bahaya:hover { background: var(--bahaya); border-color: var(--bahaya); color: var(--kertas); }
+  .tbl-kecil { min-height: 2.25rem; padding: 0.25rem 0.8rem; font-size: 0.88rem; }
+  .tbl[disabled] { opacity: 0.55; cursor: not-allowed; }
+  .tbl[disabled]:hover { background: transparent; color: inherit; }
+  .tbl-utama[disabled]:hover { background: var(--tinta); color: var(--kertas); }
+
+  /* Judul halaman */
+  .kepala-halaman {
+    display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; flex-wrap: wrap;
+    padding-bottom: 0.75rem; border-bottom: 1px solid var(--tinta);
+  }
+  .kepala-halaman h1 {
+    font-family: var(--font-judul); font-weight: 400; line-height: 1.05;
+    font-size: clamp(2rem, 6vw, 3rem);
+  }
+
+  /* Ringkasan angka */
+  .stat { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--garis); margin-bottom: 1.5rem; }
+  .stat div { padding: 1rem 0.5rem; text-align: center; }
+  .stat div + div { border-left: 1px solid var(--garis); }
+  .stat strong { display: block; font-family: var(--font-judul); font-weight: 400; font-size: 2.3rem; line-height: 1; }
+  .stat span { font-size: 0.88rem; color: var(--tinta-lembut); }
+
+  /* Alat cari dan filter */
+  .alat { display: grid; grid-template-columns: 1fr; gap: 0.6rem; }
+  @media (min-width: 40rem) { .alat { grid-template-columns: 2fr 1fr 1fr; } }
+
+  /* Formulir */
+  input[type="text"], input[type="email"], input[type="password"], input[type="date"], input[type="search"], select, textarea {
+    width: 100%; background: var(--kertas); border: 1.5px solid var(--tinta); border-radius: 2px;
+    padding: 0.6rem 0.75rem; font-size: 1rem;
+  }
+  input::placeholder, textarea::placeholder { color: var(--tinta-lembut); }
+  textarea { resize: vertical; line-height: 1.7; min-height: 6rem; }
+  .medan { display: block; margin-top: 1.4rem; }
+  .medan .label { display: block; font-weight: 600; font-size: 0.93rem; margin-bottom: 0.3rem; }
+  .medan small { display: block; color: var(--tinta-lembut); font-size: 0.85rem; margin-top: 0.35rem; line-height: 1.5; }
+  .baris3 { display: grid; grid-template-columns: 1fr; gap: 0 1rem; }
+  @media (min-width: 40rem) { .baris3 { grid-template-columns: repeat(3, 1fr); } }
+  .galat { color: var(--bahaya); min-height: 1.5em; margin-top: 1.25rem; font-size: 0.95rem; }
+  .tombol-form { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.5rem; }
+  .tombol-form .tbl-bahaya { margin-left: auto; }
+
+  /* Daftar tulisan */
+  .daftar { margin-top: 0.75rem; }
+  .daftar li {
+    display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap;
+    gap: 0.75rem 1.5rem; padding: 1.15rem 0; border-bottom: 1px solid var(--garis);
+  }
+  .info { flex: 1 1 20rem; min-width: 0; }
+  .info h3 {
+    font-family: var(--font-judul); font-weight: 400; font-size: 1.55rem; line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+  .info h3 a { text-decoration: none; }
+  .info h3 a:hover { text-decoration: underline; text-decoration-thickness: 1px; }
+  .meta { color: var(--tinta-lembut); font-size: 0.88rem; margin-top: 0.35rem; }
+  .meta span + span { margin-left: 0.9rem; }
+  .lencana {
+    display: inline-block; padding: 0 0.6rem; margin-right: 0.7rem;
+    border: 1px solid currentColor; border-radius: 99px; font-size: 0.8rem; vertical-align: 0.05em;
+  }
+  .lencana.terbit { color: var(--sukses); }
+  .lencana.draf { color: var(--tinta-lembut); }
+  .aksi { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  .kosong { padding: 3rem 0 1rem; max-width: 34rem; }
+  .kosong h2 { font-family: var(--font-judul); font-weight: 400; font-size: 1.9rem; line-height: 1.15; }
+  .kosong p { color: var(--tinta-lembut); margin: 0.5rem 0 1.25rem; }
+  .kosong .tombol-form { margin-top: 0; }
+  .hasil-kosong { padding: 2rem 0; color: var(--tinta-lembut); font-style: italic; }
+
+  /* Kartu */
+  .kartu { border: 1px solid var(--garis); background: var(--kertas-2); padding: 1.4rem; }
+  .kartu h2 { font-family: var(--font-judul); font-weight: 400; font-size: 1.7rem; line-height: 1.15; }
+  .kartu p { margin-top: 0.6rem; }
+  .kartu ol { list-style: decimal; padding-left: 1.3rem; margin-top: 0.8rem; }
+  .kartu li { margin-top: 0.4rem; }
+  .kartu code, .medan code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.86em;
+    background: var(--kertas); padding: 0.05em 0.35em; border: 1px solid var(--garis); border-radius: 2px;
+  }
+  .kartu.galat-kartu { border-color: var(--bahaya); }
+  .kartu .tombol-form { margin-top: 1.1rem; }
+  .masuk { max-width: 26rem; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
+  .masuk h1 { font-family: var(--font-judul); font-weight: 400; font-size: 2.8rem; line-height: 1.05; }
+  .masuk .sub { color: var(--tinta-lembut); margin: 0.5rem 0 0.5rem; }
+  .masuk .tbl { width: 100%; margin-top: 1.25rem; }
+
+  /* Tab tulis dan pratinjau */
+  .tab { display: flex; border-bottom: 1px solid var(--garis); margin-top: 1.25rem; }
+  .tab button {
+    background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -1px;
+    padding: 0.6rem 1.1rem; cursor: pointer; color: var(--tinta-lembut);
+  }
+  .tab button[aria-selected="true"] { border-bottom-color: var(--tinta); color: var(--tinta); font-weight: 600; }
+
+  /* Pratinjau, meniru tampilan artikel di situs */
+  .pv { max-width: 40rem; padding-top: 1.5rem; }
+  .pv .kat { font-size: 0.9rem; color: var(--tinta-lembut); font-style: italic; }
+  .pv h2 {
+    font-family: var(--font-judul); font-weight: 400; line-height: 1.05; letter-spacing: -0.01em;
+    font-size: clamp(2.2rem, 7vw, 3.4rem); margin: 0.5rem 0 0.9rem; overflow-wrap: anywhere;
+  }
+  .pv .meta { margin: 0 0 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--tinta); }
+  .pv .isi { font-size: 1.1875rem; line-height: 1.8; }
+  .pv .isi p + p { margin-top: 1.25em; }
+  .pv .isi p:first-child::first-letter {
+    font-family: var(--font-judul); float: left; font-size: 4.6em; line-height: 0.8; padding: 0.06em 0.1em 0 0;
+  }
+  .pv .draf-info { color: var(--tinta-lembut); font-style: italic; }
+
+  /* Dialog dan toast */
+  dialog {
+    border: 1.5px solid var(--tinta); background: var(--kertas); color: var(--tinta);
+    width: min(26rem, calc(100% - 2rem)); padding: 1.5rem;
+  }
+  dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
+  dialog h2 { font-family: var(--font-judul); font-weight: 400; font-size: 1.7rem; line-height: 1.15; }
+  dialog p { margin-top: 0.5rem; color: var(--tinta-lembut); overflow-wrap: anywhere; }
+  dialog .tombol-form { margin-top: 1.25rem; justify-content: flex-end; }
+  #toast {
+    position: fixed; left: 50%; bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+    transform: translate(-50%, 1rem); opacity: 0; pointer-events: none;
+    max-width: calc(100% - 2rem); padding: 0.7rem 1.2rem;
+    background: var(--tinta); color: var(--kertas); border-radius: 2px; font-size: 0.95rem;
+    transition: opacity 180ms ease, transform 180ms ease; z-index: 20;
+  }
+  #toast.tampil { opacity: 1; transform: translate(-50%, 0); }
+  #toast.galat-toast { background: var(--bahaya); color: var(--kertas); }
+  @media (prefers-reduced-motion: reduce) { #toast { transition: none; } }
+
+  @media (max-width: 30rem) {
+    .tombol-form .tbl-bahaya { margin-left: 0; }
+    .aksi { width: 100%; }
+    .tab button { flex: 1; }
+  }
+</style>
+</head>
+<body>
+<div id="app"><p class="tengah">Memuat panel admin…</p></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<dialog id="dlg" aria-labelledby="dlg-judul">
+  <form method="dialog">
+    <h2 id="dlg-judul"></h2>
+    <p id="dlg-isi"></p>
+    <div class="tombol-form">
+      <button class="tbl" value="batal">Batal</button>
+      <button class="tbl tbl-bahaya" value="ya" id="dlg-ya"></button>
+    </div>
+  </form>
+</dialog>
+<noscript><p class="tengah">Panel admin memerlukan JavaScript.</p></noscript>
+
+<script src="firebase-config.js"></script>
+<script type="module">
+/* =====================================================================
+   Panel admin HCK. Memakai Firebase Authentication (email dan kata sandi)
+   dan Cloud Firestore (koleksi "artikel", satu dokumen per tulisan,
+   ID dokumen = slug).
+   ===================================================================== */
+
+const KATEGORI = [
+  { id: "filsafat", nama: "Filsafat" },
+  { id: "agama", nama: "Agama & Akal" },
+  { id: "politik", nama: "Politik" },
+  { id: "ekonomi", nama: "Ekonomi" },
+  { id: "human", nama: "Human Interest" }
+];
+
+/* Tulisan contoh dari situs, bisa diimpor sekali klik saat koleksi masih kosong. */
+const CONTOH = [
+  {
+    slug: "manusia-baik-tanpa-takut-tuhan",
+    judul: "Apakah Manusia Bisa Baik Tanpa Takut kepada Tuhan?",
+    kategori: "filsafat", tanggal: "2026-09-18",
+    ringkas: "Pertanyaan ini sering diajukan dengan nada menuduh dari dua arah. Mungkin yang perlu kita tanyakan adalah apa yang menopang kebaikan ketika tidak ada yang melihat.",
+    isi: [
+      "Pertanyaan ini sering diajukan dengan nada menuduh, dari dua arah sekaligus. Sebagian orang beriman khawatir moral akan runtuh tanpa rasa takut kepada Tuhan. Sebagian orang tidak beriman merasa tersinggung karena kebaikan mereka dianggap tidak sah.",
+      "Mari mulai dari hal yang bisa kita amati. Ada orang religius yang jujur dan dermawan, ada pula yang culas. Ada orang tanpa agama yang setia menjaga janji, dan ada yang sama sekali tidak. Jika ketakutan kepada Tuhan adalah satu-satunya sumber kebaikan, sebaran seperti ini seharusnya tidak ada.",
+      "Namun jawaban itu terlalu cepat. Yang perlu ditanyakan bukan hanya apakah orang bisa baik, tetapi apa yang menopang kebaikan itu ketika tidak ada yang melihat. Rasa takut pada hukuman mungkin menahan tangan, tetapi belum tentu menumbuhkan kepedulian. Sebaliknya, empati tanpa kerangka nilai bisa berhenti pada orang-orang yang kita sukai saja.",
+      "Banyak tradisi agama sendiri tidak mengajarkan kebaikan semata sebagai urusan takut. Cinta, syukur, dan tanggung jawab tumbuh berdampingan dengan rasa hormat. Bagi banyak orang beriman, takut kepada Tuhan lebih dekat pada kesadaran bahwa perbuatan ada pertanggungjawabannya, ketimbang pada ketakutan terhadap ancaman.",
+      "Jadi jawabannya mungkin begini: manusia bisa baik dengan atau tanpa takut kepada Tuhan, tetapi dasar yang dipakai akan menentukan seberapa luas dan seberapa tahan lama kebaikan itu. Pertanyaan yang lebih jujur untuk kita masing-masing adalah, apa yang membuat saya tetap baik ketika tidak ada yang memaksa?"
+    ]
+  },
+  {
+    slug: "ketika-wahyu-bertemu-akal",
+    judul: "Ketika Wahyu Bertemu Akal",
+    kategori: "agama", tanggal: "2026-09-12",
+    ringkas: "Wahyu dan akal sering digambarkan berhadapan, padahal orang yang menjalani keduanya tahu bahwa batasnya tidak serapi itu.",
+    isi: [
+      "Wahyu dan akal sering digambarkan sebagai dua pihak yang berhadapan. Yang satu datang dari atas, yang lain tumbuh dari dalam. Gambaran itu rapi, tetapi jarang cocok dengan pengalaman orang yang benar-benar menjalani keduanya.",
+      "Siapa pun yang membaca teks suci harus menafsirkan. Menafsirkan berarti memakai bahasa, konteks, logika, dan pengetahuan yang sudah ada di kepala. Dengan kata lain, akal sudah bekerja bahkan sebelum kita sempat mengatakan bahwa kita hanya patuh.",
+      "Sebaliknya, akal juga tidak berdiri di ruang hampa. Ia bertumpu pada asumsi yang tidak sepenuhnya ia buktikan sendiri, misalnya bahwa dunia bisa dipahami atau bahwa ingatan kita cukup dapat dipercaya. Ada iman kecil di dalam nalar.",
+      "Ketegangan muncul ketika salah satunya mengklaim wilayah yang bukan miliknya. Akal yang menuntut bukti empiris untuk soal makna terdalam akan kecewa. Wahyu yang dipakai untuk menjawab pertanyaan teknis tentang alam akan terus berbenturan dengan temuan baru.",
+      "Barangkali sikap yang paling jujur adalah membiarkan keduanya saling menguji dengan rendah hati: bertanya pada tafsir kita sendiri, dan bertanya juga pada batas cara berpikir kita."
+    ]
+  },
+  {
+    slug: "penderitaan-menjadi-pertanyaan",
+    judul: "Penderitaan Menjadi Pertanyaan",
+    kategori: "filsafat", tanggal: "2026-09-05",
+    ringkas: "Penderitaan datang sebagai kabar, bukan sebagai bahan diskusi. Baru kemudian ia berubah menjadi pertanyaan.",
+    isi: [
+      "Penderitaan jarang datang sebagai bahan diskusi. Ia datang sebagai kabar dari rumah sakit, sebagai pintu yang tertutup, sebagai kursi kosong di meja makan. Baru kemudian, sering berbulan-bulan sesudahnya, ia berubah menjadi pertanyaan: mengapa ini terjadi, dan mengapa pada saya?",
+      "Para filsuf sudah lama mencoba menjawab. Ada yang melihat penderitaan sebagai akibat dari pilihan, ada yang menganggapnya bagian tak terhindarkan dari hidup, ada yang mencari makna di dalamnya. Tiap jawaban menolong sebagian orang dan melukai sebagian lainnya.",
+      "Masalahnya, jawaban yang benar secara logika belum tentu terasa benar bagi orang yang sedang berduka. Menyebut penderitaan sebagai pelajaran, misalnya, bisa terdengar seperti pembenaran atas rasa sakit yang belum selesai.",
+      "Mungkin karena itu pertanyaan tentang penderitaan perlu dua bentuk. Bentuk pertama bersifat teoretis: mengapa dunia begini. Bentuk kedua bersifat manusiawi: apa yang bisa kita lakukan bagi orang yang sedang menanggungnya. Yang kedua sering lebih mendesak, dan tidak perlu menunggu yang pertama selesai."
+    ]
+  },
+  {
+    slug: "suara-yang-tidak-terhitung",
+    judul: "Suara yang Tidak Terhitung",
+    kategori: "politik", tanggal: "2026-08-29",
+    ringkas: "Tidak semua pendapat warga masuk ke dalam angka. Yang tidak terhitung tetap ikut menentukan arah.",
+    isi: [
+      "Dalam politik, yang terhitung biasanya yang bisa dihitung: suara di kotak pemilihan, jumlah pengikut, hasil survei. Padahal ada banyak pendapat warga yang tidak pernah masuk ke angka mana pun, seperti obrolan di warung, keluhan di grup pesan, atau keputusan diam-diam untuk tidak peduli lagi.",
+      "Suara yang tidak terhitung bukan berarti tidak berpengaruh. Kebijakan sering lahir dari perkiraan pejabat tentang apa yang diinginkan orang banyak, dan perkiraan itu dibentuk oleh siapa yang paling terdengar. Yang paling keras belum tentu yang paling banyak.",
+      "Karena itu, berpikir kritis tentang politik bukan hanya soal menilai janji, tetapi juga bertanya siapa yang tidak sempat bicara, dan bagaimana kita bisa mendengar mereka."
+    ]
+  },
+  {
+    slug: "harga-sebuah-waktu-luang",
+    judul: "Harga Sebuah Waktu Luang",
+    kategori: "ekonomi", tanggal: "2026-08-21",
+    ringkas: "Waktu luang jarang muncul di catatan keuangan, tetapi ia termasuk hal yang paling mahal untuk dibeli.",
+    isi: [
+      "Kita terbiasa menghitung harga barang, tetapi jarang menghitung harga waktu luang. Ia tidak muncul di struk belanja dan tidak tercatat di laporan keuangan rumah tangga, padahal ia sering menjadi hal pertama yang dikorbankan ketika penghasilan terasa kurang.",
+      "Bagi sebagian orang, waktu luang adalah sesuatu yang bisa dibeli: dengan membayar orang lain mengerjakan hal-hal yang memakan waktu. Bagi sebagian lain, ia justru menyusut ketika biaya hidup naik dan pekerjaan tambahan menjadi keharusan.",
+      "Pertanyaannya, apa yang kita anggap cukup? Pertanyaan itu terdengar sederhana, tetapi jawabannya menentukan bagaimana kita memilih pekerjaan, mengatur pengeluaran, dan menilai keberhasilan orang lain."
+    ]
+  },
+  {
+    slug: "tukang-tambal-ban-di-ujung-gang",
+    judul: "Tukang Tambal Ban di Ujung Gang",
+    kategori: "human", tanggal: "2026-08-14",
+    ringkas: "Sebuah bangku plastik, sebuah pompa tangan, dan cara seorang tukang tambal ban memperlakukan setiap pelanggan.",
+    isi: [
+      "Di ujung gang, ada bangku plastik biru dan sebuah pompa tangan yang gagangnya sudah aus. Di situlah seorang tukang tambal ban duduk setiap pagi, jauh sebelum toko-toko di jalan besar membuka pintu.",
+      "Ia mengerjakan setiap ban seolah-olah itu ban satu-satunya hari itu. Tidak terburu-buru, tidak menyebut harga sebelum selesai memeriksa. Kalau lubangnya sudah tidak bisa ditambal, ia berkata jujur, meski itu berarti ia tidak mendapat uang.",
+      "Kita sering mencari teladan di tempat yang tinggi. Kadang teladan itu justru duduk di ujung gang, menunggu ban yang bocor."
+    ]
+  }
+];
+
+const cfg = window.HCK_FIREBASE;
+const V = "https://www.gstatic.com/firebasejs/10.12.2/";
+const root = document.getElementById("app");
+const $ = (s, r = document) => r.querySelector(s);
+
+/* ---------- Bantuan kecil ---------- */
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const namaKat = id => (KATEGORI.find(k => k.id === id) || { nama: id }).nama;
+const hariIni = () => {
+  const d = new Date(), p = n => String(n).padStart(2, "0");
+  return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+};
+const tglIndo = iso => {
+  try { return new Date(iso + "T00:00:00Z").toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }); }
+  catch { return iso; }
+};
+const slugify = s => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+  .replace(/&/g, " dan ").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80).replace(/-+$/, "");
+const SLUG_VALID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+/* Satu baris kosong memisahkan paragraf. Baris tunggal di dalam paragraf jadi spasi. */
+const keParagraf = t => t.split(/\n\s*\n/).map(p => p.replace(/\s*\n\s*/g, " ").trim()).filter(Boolean);
+const jumlahKata = arr => arr.join(" ").split(/\s+/).filter(Boolean).length;
+const menitBaca = arr => Math.max(1, Math.round(jumlahKata(arr) / 200));
+const potong = (t, n) => {
+  if (t.length <= n) return t;
+  const p = t.slice(0, n), i = p.lastIndexOf(" ");
+  return (i > n * 0.6 ? p.slice(0, i) : p).replace(/[\s,.;:]+$/, "") + "…";
+};
+
+let tToast;
+function toast(pesan, jenis) {
+  const el = $("#toast");
+  el.textContent = pesan;
+  el.className = "tampil" + (jenis === "galat" ? " galat-toast" : "");
+  clearTimeout(tToast);
+  tToast = setTimeout(() => { el.className = ""; }, 3400);
+}
+
+function konfirmasi(judul, isi, labelYa) {
+  return new Promise(res => {
+    const dlg = $("#dlg");
+    $("#dlg-judul").textContent = judul;
+    $("#dlg-isi").textContent = isi;
+    $("#dlg-ya").textContent = labelYa;
+    dlg.returnValue = "";
+    dlg.addEventListener("close", () => res(dlg.returnValue === "ya"), { once: true });
+    dlg.showModal();
+  });
+}
+
+const pesanAuth = kode => ({
+  "auth/invalid-credential": "Email atau kata sandi salah.",
+  "auth/wrong-password": "Email atau kata sandi salah.",
+  "auth/user-not-found": "Email atau kata sandi salah.",
+  "auth/invalid-email": "Format email tidak valid.",
+  "auth/too-many-requests": "Terlalu banyak percobaan. Tunggu beberapa menit, lalu coba lagi.",
+  "auth/network-request-failed": "Tidak ada koneksi internet. Periksa jaringan, lalu coba lagi.",
+  "auth/operation-not-allowed": "Metode masuk email dan kata sandi belum diaktifkan di Firebase Authentication.",
+  "auth/user-disabled": "Akun ini dinonaktifkan di Firebase."
+}[kode] || "Gagal masuk. Coba lagi.");
+
+const pesanFs = e => ({
+  "permission-denied": "Ditolak: akun ini belum punya izin admin. Periksa UID di aturan Firestore.",
+  "unavailable": "Tidak bisa terhubung ke Firebase. Periksa koneksi internet, lalu coba lagi.",
+  "slug-dipakai": "Slug ini sudah dipakai tulisan lain. Ganti slug-nya."
+}[e && e.code] || "Terjadi kesalahan saat menghubungi Firebase. Coba lagi.");
+
+/* ---------- Status aplikasi ---------- */
+let Au, F, auth, db;
+let pengguna = null;
+let semua = [];
+let kotor = false;          /* ada perubahan di editor yang belum disimpan */
+let hashAktif = "";
+let abaikanHash = false;
+const filter = { q: "", status: "", kat: "" };
+
+function urut() {
+  semua.sort((a, b) => (a.tanggal < b.tanggal ? 1 : a.tanggal > b.tanggal ? -1 : 0));
+}
+async function muatSemua() {
+  const snap = await F.getDocs(F.collection(db, "artikel"));
+  semua = snap.docs.map(d => {
+    const x = d.data();
+    return { ...x, slug: d.id, isi: Array.isArray(x.isi) ? x.isi : [], status: x.status === "terbit" ? "terbit" : "draf" };
+  });
+  urut();
+}
+
+/* ---------- Tampilan awal ---------- */
+function tampilSetup() {
+  root.innerHTML = `<main class="masuk">
+    <h1>Hampir siap</h1>
+    <p class="sub">Panel admin belum terhubung ke Firebase.</p>
+    <div class="kartu" style="margin-top:1.25rem">
+      <h2>Isi firebase-config.js</h2>
+      <ol>
+        <li>Buka Firebase Console, lalu buat proyek dan aplikasi web.</li>
+        <li>Salin nilai konfigurasinya ke berkas <code>firebase-config.js</code>.</li>
+        <li>Aktifkan Authentication dengan metode Email/Password, lalu buat satu akun admin.</li>
+        <li>Buat database Firestore, lalu tempel isi <code>firestore.rules</code> di tab Rules.</li>
+        <li>Muat ulang halaman ini.</li>
+      </ol>
+    </div>
+  </main>`;
+}
+
+function tampilMasuk() {
+  document.title = "Masuk | Admin HCK";
+  root.innerHTML = `<main class="masuk">
+    <h1>HCK Admin</h1>
+    <p class="sub">Masuk untuk mengelola tulisan.</p>
+    <form id="f-masuk" novalidate>
+      <label class="medan"><span class="label">Email</span>
+        <input type="email" id="m-email" autocomplete="username" required></label>
+      <label class="medan"><span class="label">Kata sandi</span>
+        <input type="password" id="m-sandi" autocomplete="current-password" required></label>
+      <p class="galat" id="m-galat" role="alert"></p>
+      <button class="tbl tbl-utama" type="submit" id="m-tombol">Masuk</button>
+    </form>
+  </main>`;
+  $("#m-email").focus();
+  $("#f-masuk").onsubmit = async e => {
+    e.preventDefault();
+    const email = $("#m-email").value.trim(), sandi = $("#m-sandi").value;
+    const galat = $("#m-galat"), tombol = $("#m-tombol");
+    if (!email || !sandi) { galat.textContent = "Isi email dan kata sandi."; return; }
+    galat.textContent = "";
+    tombol.disabled = true; tombol.textContent = "Memeriksa…";
+    try {
+      await Au.signInWithEmailAndPassword(auth, email, sandi);
+    } catch (err) {
+      galat.textContent = pesanAuth(err.code);
+      tombol.disabled = false; tombol.textContent = "Masuk";
+    }
+  };
+}
+
+const kartuGalat = (judul, isi, tombol) => `<div class="kartu galat-kartu">
+  <h2>${esc(judul)}</h2>${isi}
+  <div class="tombol-form">${tombol || ""}</div></div>`;
+
+function kerangka() {
+  root.innerHTML = `<header class="bar"><div class="bar-dalam">
+      <a class="logo" href="#/">HCK <em>Admin</em></a>
+      <div class="bar-kanan">
+        <a href="index.html" target="_blank" rel="noopener">Lihat situs</a>
+        <span class="email">${esc(pengguna.email || "")}</span>
+        <button class="tbl tbl-kecil" id="keluar" type="button">Keluar</button>
+      </div></div></header>
+    <main id="isi" class="wrap" tabindex="-1"></main>`;
+  $("#keluar").onclick = async () => {
+    if (kotor && !(await konfirmasi("Keluar sekarang?", "Perubahan yang belum disimpan akan hilang.", "Keluar"))) return;
+    kotor = false;
+    await Au.signOut(auth);
+  };
+}
+
+async function masukKeAdmin() {
+  kerangka();
+  $("#isi").innerHTML = '<p class="tengah">Memuat tulisan…</p>';
+  try {
+    await muatSemua();
+  } catch (e) {
+    console.error(e);
+    if (e.code === "permission-denied") {
+      $("#isi").innerHTML = kartuGalat("Akun ini belum jadi admin",
+        `<p>Akun berhasil masuk, tetapi aturan Firestore belum mengizinkannya. Salin UID di bawah ke berkas <code>firestore.rules</code> (ganti <code>GANTI_DENGAN_UID_ADMIN</code>), lalu publikasikan aturannya.</p>
+         <p>UID akun ini: <code>${esc(pengguna.uid)}</code></p>`,
+        '<button class="tbl" id="coba-lagi" type="button">Coba lagi</button>');
+      $("#coba-lagi").onclick = masukKeAdmin;
+    } else {
+      $("#isi").innerHTML = kartuGalat("Tulisan gagal dimuat",
+        `<p>${esc(pesanFs(e))}</p>`,
+        '<button class="tbl" id="coba-lagi" type="button">Coba lagi</button>');
+      $("#coba-lagi").onclick = masukKeAdmin;
+    }
+    return;
+  }
+  hashAktif = location.hash;
+  rute();
+}
+
+/* ---------- Rute ---------- */
+function rute() {
+  if (!pengguna || !$("#isi")) return;
+  const h = (location.hash || "#/").replace(/^#\/?/, "");
+  const [bagian, ...sisa] = h.split("/");
+  window.scrollTo(0, 0);
+  if (bagian === "baru") return editor(null);
+  if (bagian === "edit") {
+    const slug = decodeURIComponent(sisa.join("/"));
+    const a = semua.find(x => x.slug === slug);
+    if (!a) { toast("Tulisan tidak ditemukan.", "galat"); location.hash = "#/"; return; }
+    return editor(a);
+  }
+  daftarTulisan();
+}
+
+window.addEventListener("hashchange", async () => {
+  if (abaikanHash) { abaikanHash = false; return; }
+  if (kotor) {
+    const lanjut = await konfirmasi("Tinggalkan halaman ini?", "Perubahan yang belum disimpan akan hilang.", "Tinggalkan");
+    if (!lanjut) { abaikanHash = true; location.hash = hashAktif; return; }
+    kotor = false;
+  }
+  hashAktif = location.hash;
+  rute();
+});
+window.addEventListener("beforeunload", e => { if (kotor) { e.preventDefault(); e.returnValue = ""; } });
+
+/* ---------- Daftar tulisan ---------- */
+function daftarTulisan() {
+  kotor = false;
+  document.title = "Tulisan | Admin HCK";
+  const n = semua.length, t = semua.filter(a => a.status === "terbit").length;
+  const opsiKat = KATEGORI.map(k => `<option value="${k.id}">${esc(k.nama)}</option>`).join("");
+
+  $("#isi").innerHTML = `
+    <div class="kepala-halaman"><h1>Tulisan</h1><a class="tbl tbl-utama" href="#/baru">Tulisan baru</a></div>
+    <div class="stat" aria-label="Ringkasan">
+      <div><strong>${n}</strong><span>Total</span></div>
+      <div><strong>${t}</strong><span>Terbit</span></div>
+      <div><strong>${n - t}</strong><span>Draf</span></div>
+    </div>
+    ${n === 0 ? `
+      <section class="kosong">
+        <h2>Belum ada tulisan</h2>
+        <p>Mulai dengan menulis yang pertama, atau impor ${CONTOH.length} tulisan contoh dari situs agar langsung tampil di database.</p>
+        <div class="tombol-form">
+          <a class="tbl tbl-utama" href="#/baru">Tulis sekarang</a>
+          <button class="tbl" id="impor" type="button">Impor ${CONTOH.length} tulisan contoh</button>
+        </div>
+      </section>` : `
+      <div class="alat">
+        <input type="search" id="q" placeholder="Cari judul atau isi" aria-label="Cari tulisan" autocomplete="off">
+        <select id="fs" aria-label="Filter status">
+          <option value="">Semua status</option><option value="terbit">Terbit</option><option value="draf">Draf</option>
+        </select>
+        <select id="fk" aria-label="Filter kategori"><option value="">Semua kategori</option>${opsiKat}</select>
+      </div>
+      <ul class="daftar" id="hasil"></ul>`}`;
+
+  if (n === 0) {
+    $("#impor").onclick = imporContoh;
+    return;
+  }
+  $("#q").value = filter.q; $("#fs").value = filter.status; $("#fk").value = filter.kat;
+  $("#q").oninput = e => { filter.q = e.target.value; isiDaftar(); };
+  $("#fs").onchange = e => { filter.status = e.target.value; isiDaftar(); };
+  $("#fk").onchange = e => { filter.kat = e.target.value; isiDaftar(); };
+  $("#hasil").onclick = async e => {
+    const btn = e.target.closest("button[data-aksi]");
+    if (!btn) return;
+    const a = semua.find(x => x.slug === btn.closest("li").dataset.slug);
+    if (!a) return;
+    if (btn.dataset.aksi === "status") await ubahStatus(a, btn);
+    else if (btn.dataset.aksi === "hapus") await hapusTulisan(a);
+  };
+  isiDaftar();
+}
+
+function barisTulisan(a) {
+  const terbit = a.status === "terbit";
+  const alamat = encodeURIComponent(a.slug);
+  return `<li data-slug="${esc(a.slug)}">
+    <div class="info">
+      <h3><a href="#/edit/${alamat}">${esc(a.judul || "Tanpa judul")}</a></h3>
+      <p class="meta"><span class="lencana ${terbit ? "terbit" : "draf"}">${terbit ? "Terbit" : "Draf"}</span><span>${esc(namaKat(a.kategori))}</span><span>${esc(tglIndo(a.tanggal))}</span><span>${menitBaca(a.isi)} menit baca</span></p>
+    </div>
+    <div class="aksi">
+      ${terbit ? `<a class="tbl tbl-kecil" href="index.html#/artikel/${alamat}" target="_blank" rel="noopener">Lihat</a>` : ""}
+      <a class="tbl tbl-kecil" href="#/edit/${alamat}">Edit</a>
+      <button class="tbl tbl-kecil" type="button" data-aksi="status">${terbit ? "Jadikan draf" : "Terbitkan"}</button>
+      <button class="tbl tbl-kecil tbl-bahaya" type="button" data-aksi="hapus">Hapus</button>
+    </div></li>`;
+}
+
+function isiDaftar() {
+  const kunci = filter.q.toLowerCase().split(/\s+/).filter(Boolean);
+  const hasil = semua.filter(a => {
+    if (filter.status && a.status !== filter.status) return false;
+    if (filter.kat && a.kategori !== filter.kat) return false;
+    if (!kunci.length) return true;
+    const teks = (a.judul + " " + a.ringkas + " " + a.isi.join(" ")).toLowerCase();
+    return kunci.every(k => teks.includes(k));
+  });
+  $("#hasil").innerHTML = hasil.length
+    ? hasil.map(barisTulisan).join("")
+    : '<li class="hasil-kosong">Tidak ada tulisan yang cocok dengan pencarian atau filter ini.</li>';
+}
+
+async function ubahStatus(a, btn) {
+  const baru = a.status === "terbit" ? "draf" : "terbit";
+  if (baru === "terbit" && !a.isi.length) {
+    toast("Tulisan yang masih kosong belum bisa diterbitkan. Isi dulu di editor.", "galat");
+    return;
+  }
+  btn.disabled = true;
+  try {
+    await F.updateDoc(F.doc(db, "artikel", a.slug), { status: baru, diperbarui: F.serverTimestamp() });
+    a.status = baru;
+    toast(baru === "terbit" ? "Diterbitkan." : "Dijadikan draf.");
+    daftarTulisan();
+  } catch (e) {
+    console.error(e);
+    toast(pesanFs(e), "galat");
+    btn.disabled = false;
+  }
+}
+
+async function hapusTulisan(a) {
+  const ya = await konfirmasi("Hapus tulisan ini?", `"${a.judul || a.slug}" akan dihapus permanen dan tidak bisa dikembalikan.`, "Hapus");
+  if (!ya) return;
+  try {
+    await F.deleteDoc(F.doc(db, "artikel", a.slug));
+    semua = semua.filter(x => x.slug !== a.slug);
+    toast("Dihapus.");
+    daftarTulisan();
+  } catch (e) {
+    console.error(e);
+    toast(pesanFs(e), "galat");
+  }
+}
+
+async function imporContoh() {
+  const tombol = $("#impor");
+  tombol.disabled = true; tombol.textContent = "Mengimpor…";
+  try {
+    const batch = F.writeBatch(db);
+    CONTOH.forEach(a => {
+      batch.set(F.doc(db, "artikel", a.slug), { ...a, status: "terbit", dibuat: F.serverTimestamp(), diperbarui: F.serverTimestamp() });
+    });
+    await batch.commit();
+    await muatSemua();
+    toast("Diimpor.");
+    daftarTulisan();
+  } catch (e) {
+    console.error(e);
+    toast(pesanFs(e), "galat");
+    tombol.disabled = false; tombol.textContent = `Impor ${CONTOH.length} tulisan contoh`;
+  }
+}
+
+/* ---------- Editor ---------- */
+function pratinjau(d) {
+  const jml = d.isi.length
+    ? d.isi.map(p => `<p>${esc(p)}</p>`).join("")
+    : '<p class="draf-info">Isi tulisan masih kosong.</p>';
+  return `<article class="pv">
+    <p class="kat">${esc(namaKat(d.kategori))}</p>
+    <h2>${esc(d.judul || "Tanpa judul")}</h2>
+    <p class="meta"><span>${esc(tglIndo(d.tanggal))}</span><span>${menitBaca(d.isi)} menit baca</span></p>
+    <div class="isi">${jml}</div></article>`;
+}
+
+function editor(a) {
+  const baru = !a;
+  let slugSaatIni = a ? a.slug : "";
+  let slugManual = !baru;   /* pada tulisan lama, slug tidak berubah otomatis saat judul diedit */
+  kotor = false;
+  document.title = (baru ? "Tulisan baru" : "Edit tulisan") + " | Admin HCK";
+
+  const d = a
+    ? { ...a, isiTeks: a.isi.join("\n\n") }
+    : { slug: "", judul: "", kategori: KATEGORI[0].id, tanggal: hariIni(), ringkas: "", isiTeks: "", status: "draf" };
+
+  $("#isi").innerHTML = `
+    <div class="kepala-halaman"><h1>${baru ? "Tulisan baru" : "Edit tulisan"}</h1><a class="tbl" href="#/">Kembali ke daftar</a></div>
+    <div class="tab" role="tablist">
+      <button type="button" role="tab" id="tab-tulis" aria-selected="true" aria-controls="p-tulis">Tulis</button>
+      <button type="button" role="tab" id="tab-lihat" aria-selected="false" aria-controls="p-lihat">Pratinjau</button>
+    </div>
+    <form id="form" novalidate>
+      <div id="p-tulis" role="tabpanel" aria-labelledby="tab-tulis">
+        <label class="medan"><span class="label">Judul</span>
+          <input type="text" id="f-judul" maxlength="150" autocomplete="off" required></label>
+        <label class="medan"><span class="label">Slug (alamat tulisan)</span>
+          <input type="text" id="f-slug" maxlength="80" autocomplete="off" spellcheck="false">
+          <small>Huruf kecil, angka, dan tanda hubung. Alamatnya: <code>index.html#/artikel/<span id="slug-contoh"></span></code>${baru ? "" : " Mengubah slug akan mengubah tautan tulisan ini."}</small></label>
+        <div class="baris3">
+          <label class="medan"><span class="label">Kategori</span>
+            <select id="f-kat">${KATEGORI.map(k => `<option value="${k.id}">${esc(k.nama)}</option>`).join("")}</select></label>
+          <label class="medan"><span class="label">Tanggal terbit</span>
+            <input type="date" id="f-tgl" required></label>
+          <label class="medan"><span class="label">Status</span>
+            <select id="f-status"><option value="draf">Draf (belum tampil di situs)</option><option value="terbit">Terbit</option></select></label>
+        </div>
+        <label class="medan"><span class="label">Ringkasan</span>
+          <textarea id="f-ringkas" rows="3" maxlength="300"></textarea>
+          <small><span id="c-ringkas">0</span> dari 300 huruf. Tampil di daftar tulisan. Kosongkan agar diambil dari paragraf pertama.</small></label>
+        <label class="medan"><span class="label">Isi tulisan</span>
+          <textarea id="f-isi" rows="18"></textarea>
+          <small>Pisahkan paragraf dengan satu baris kosong. <span id="statistik"></span></small></label>
+      </div>
+      <div id="p-lihat" role="tabpanel" aria-labelledby="tab-lihat" hidden></div>
+      <p class="galat" id="galat" role="alert"></p>
+      <div class="tombol-form">
+        <button class="tbl tbl-utama" type="submit" id="simpan">Simpan</button>
+        ${baru ? "" : '<button class="tbl tbl-bahaya" type="button" id="hapus-ini">Hapus tulisan</button>'}
+      </div>
+    </form>`;
+
+  /* Isi nilai lewat properti agar aman dari karakter khusus */
+  $("#f-judul").value = d.judul;
+  $("#f-slug").value = d.slug;
+  $("#f-kat").value = KATEGORI.some(k => k.id === d.kategori) ? d.kategori : KATEGORI[0].id;
+  $("#f-tgl").value = d.tanggal;
+  $("#f-status").value = d.status;
+  $("#f-ringkas").value = d.ringkas;
+  $("#f-isi").value = d.isiTeks;
+
+  const kumpul = () => {
+    const paras = keParagraf($("#f-isi").value);
+    let ringkas = $("#f-ringkas").value.trim();
+    if (!ringkas && paras[0]) ringkas = potong(paras[0], 180);
+    return {
+      slug: $("#f-slug").value.trim(), judul: $("#f-judul").value.trim(), kategori: $("#f-kat").value,
+      tanggal: $("#f-tgl").value, ringkas, isi: paras, status: $("#f-status").value
+    };
+  };
+  const perbarui = () => {
+    const paras = keParagraf($("#f-isi").value);
+    $("#statistik").textContent = paras.length
+      ? `${jumlahKata(paras)} kata, ${paras.length} paragraf, sekitar ${menitBaca(paras)} menit baca.`
+      : "Belum ada isi.";
+    $("#c-ringkas").textContent = $("#f-ringkas").value.length;
+    $("#slug-contoh").textContent = $("#f-slug").value.trim() || "slug-tulisan";
+  };
+  perbarui();
+
+  $("#form").addEventListener("input", e => {
+    kotor = true;
+    $("#galat").textContent = "";
+    if (e.target.id === "f-slug") {
+      $("#f-slug").value = $("#f-slug").value.toLowerCase().replace(/\s+/g, "-");
+      slugManual = $("#f-slug").value.trim() !== "";
+    } else if (e.target.id === "f-judul" && !slugManual) {
+      $("#f-slug").value = slugify($("#f-judul").value);
+    }
+    perbarui();
+  });
+
+  /* Tab tulis dan pratinjau */
+  const pilihTab = lihat => {
+    $("#p-tulis").hidden = lihat; $("#p-lihat").hidden = !lihat;
+    $("#tab-tulis").setAttribute("aria-selected", String(!lihat));
+    $("#tab-lihat").setAttribute("aria-selected", String(lihat));
+    if (lihat) $("#p-lihat").innerHTML = pratinjau(kumpul());
+  };
+  $("#tab-tulis").onclick = () => pilihTab(false);
+  $("#tab-lihat").onclick = () => pilihTab(true);
+
+  const cek = data => {
+    if (!data.judul) return ["Judul belum diisi.", "#f-judul"];
+    if (!data.slug) return ["Slug belum diisi.", "#f-slug"];
+    if (!SLUG_VALID.test(data.slug)) return ["Slug hanya boleh berisi huruf kecil, angka, dan tanda hubung, tanpa spasi.", "#f-slug"];
+    if (!data.tanggal) return ["Tanggal belum diisi.", "#f-tgl"];
+    if (data.status === "terbit" && !data.isi.length) return ["Tulisan yang diterbitkan harus punya isi. Isi dulu, atau simpan sebagai draf.", "#f-isi"];
+    return null;
+  };
+
+  $("#form").onsubmit = async e => {
+    e.preventDefault();
+    pilihTab(false);
+    const data = kumpul();
+    const masalah = cek(data);
+    if (masalah) { $("#galat").textContent = masalah[0]; $(masalah[1]).focus(); return; }
+    const tombol = $("#simpan");
+    tombol.disabled = true; tombol.textContent = "Menyimpan…";
+    try {
+      await simpan(data, slugSaatIni);
+      kotor = false;
+      toast("Tersimpan.");
+      /* Editor ditutup: kembali ke daftar, tempat tulisan yang baru disimpan langsung terlihat */
+      location.hash = "#/";
+    } catch (err) {
+      console.error(err);
+      $("#galat").textContent = pesanFs(err);
+      tombol.disabled = false; tombol.textContent = "Simpan";
+    }
+  };
+
+  function pasangHapus() {
+    const b = $("#hapus-ini");
+    if (!b) return;
+    b.onclick = async () => {
+      const judul = $("#f-judul").value.trim() || slugSaatIni;
+      if (!(await konfirmasi("Hapus tulisan ini?", `"${judul}" akan dihapus permanen dan tidak bisa dikembalikan.`, "Hapus"))) return;
+      try {
+        await F.deleteDoc(F.doc(db, "artikel", slugSaatIni));
+        semua = semua.filter(x => x.slug !== slugSaatIni);
+        kotor = false;
+        toast("Dihapus.");
+        location.hash = "#/";
+      } catch (err) {
+        console.error(err);
+        toast(pesanFs(err), "galat");
+      }
+    };
+  }
+  pasangHapus();
+  if (baru) $("#f-judul").focus();
+}
+
+async function simpan(data, slugLama) {
+  const ref = F.doc(db, "artikel", data.slug);
+  const lama = slugLama ? semua.find(x => x.slug === slugLama) : null;
+
+  if (data.slug !== slugLama) {
+    const ada = await F.getDoc(ref);
+    if (ada.exists()) throw Object.assign(new Error("slug dipakai"), { code: "slug-dipakai" });
+  }
+
+  if (!slugLama) {
+    await F.setDoc(ref, { ...data, dibuat: F.serverTimestamp(), diperbarui: F.serverTimestamp() });
+  } else if (slugLama === data.slug) {
+    await F.setDoc(ref, { ...data, diperbarui: F.serverTimestamp() }, { merge: true });
+  } else {
+    /* Slug berubah: dokumen dipindah ke ID baru dalam satu langkah */
+    const batch = F.writeBatch(db);
+    batch.set(ref, { ...data, dibuat: (lama && lama.dibuat) || F.serverTimestamp(), diperbarui: F.serverTimestamp() });
+    batch.delete(F.doc(db, "artikel", slugLama));
+    await batch.commit();
+  }
+
+  semua = semua.filter(x => x.slug !== slugLama && x.slug !== data.slug);
+  semua.push({ ...(lama || {}), ...data });
+  urut();
+}
+
+/* ---------- Mulai ---------- */
+(async function mulai() {
+  if (!cfg || !cfg.apiKey || !cfg.projectId) { tampilSetup(); return; }
+  try {
+    const [A, Auth, Fs] = await Promise.all([
+      import(V + "firebase-app.js"),
+      import(V + "firebase-auth.js"),
+      import(V + "firebase-firestore.js")
+    ]);
+    Au = Auth; F = Fs;
+    const app = A.initializeApp(cfg);
+    auth = Au.getAuth(app);
+    db = F.getFirestore(app);
+  } catch (e) {
+    console.error(e);
+    root.innerHTML = `<main class="masuk">${kartuGalat("Firebase gagal dimuat",
+      "<p>Periksa koneksi internet. Jika halaman dibuka langsung dari berkas (file://), jalankan lewat server lokal atau Firebase Hosting.</p>",
+      '<button class="tbl" type="button" onclick="location.reload()">Muat ulang</button>')}</main>`;
+    return;
+  }
+  Au.onAuthStateChanged(auth, async user => {
+    pengguna = user;
+    if (user) { await masukKeAdmin(); }
+    else { semua = []; kotor = false; tampilMasuk(); }
+  });
+})();
+</script>
+</body>
+</html>
