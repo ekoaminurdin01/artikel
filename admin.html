@@ -210,6 +210,53 @@
   #toast.galat-toast { background: var(--bahaya); color: var(--kertas); }
   @media (prefers-reduced-motion: reduce) { #toast { transition: none; } }
 
+  /* Menu admin */
+  .menu-admin { display: flex; gap: 0.25rem; flex: 1 1 auto; margin-left: 0.5rem; }
+  .menu-admin a {
+    padding: 0.45rem 0.8rem; text-decoration: none; font-size: 0.95rem;
+    border-bottom: 2px solid transparent;
+  }
+  .menu-admin a:hover { border-bottom-color: var(--garis); color: var(--tinta); }
+  .menu-admin a[aria-current="page"] { border-bottom-color: var(--tinta); font-weight: 600; }
+  @media (max-width: 40rem) { .menu-admin { order: 3; flex-basis: 100%; margin-left: 0; } }
+
+  /* Statistik */
+  .rentang { display: flex; gap: 0.4rem; }
+  .rentang .tbl[aria-pressed="true"] { background: var(--tinta); color: var(--kertas); }
+  .filter-stat { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.75rem 1.75rem; margin-top: 1.25rem; }
+  .tanggal-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.6rem; }
+  .tanggal-form label { display: block; font-size: 0.85rem; color: var(--tinta-lembut); }
+  .tanggal-form input[type="date"] { width: auto; min-height: 2.25rem; padding: 0.25rem 0.5rem; font-size: 0.92rem; margin-top: 0.15rem; }
+  #t-galat { margin-top: 0.75rem; min-height: 0; }
+  #ket-periode { margin-top: 0.9rem; }
+  .kpi { display: grid; grid-template-columns: repeat(2, 1fr); column-gap: 1.5rem; margin-top: 1.25rem; }
+  @media (min-width: 40rem) { .kpi { grid-template-columns: repeat(4, 1fr); } }
+  .kpi div { padding: 1rem 0; border-bottom: 1px solid var(--garis); }
+  .kpi strong { display: block; font-family: var(--font-judul); font-weight: 400; font-size: 2.7rem; line-height: 1; }
+  .kpi .nama { display: block; font-weight: 600; font-size: 0.93rem; margin-top: 0.45rem; }
+  .kpi small { display: block; color: var(--tinta-lembut); font-size: 0.82rem; line-height: 1.4; margin-top: 0.15rem; }
+  .bagian-stat { margin-top: 2.25rem; }
+  .bagian-stat h2 { font-family: var(--font-judul); font-weight: 400; font-size: 1.7rem; line-height: 1.15; margin-bottom: 0.6rem; }
+  .legenda { display: flex; gap: 0.3rem 1.25rem; flex-wrap: wrap; font-size: 0.88rem; color: var(--tinta-lembut); margin-bottom: 0.5rem; }
+  .legenda span { display: inline-flex; align-items: center; gap: 0.5rem; }
+  .grafik { width: 100%; height: auto; display: block; }
+  .grafik text { fill: var(--tinta-lembut); font-size: 11px; font-family: var(--font-teks); }
+  .grafik .kisi { stroke: var(--garis); stroke-width: 1; }
+  .garis-pengunjung { fill: none; stroke: var(--aksen); stroke-width: 2.25; stroke-linejoin: round; }
+  .garis-klik { fill: none; stroke: var(--tinta); stroke-width: 2; stroke-dasharray: 6 4; stroke-linejoin: round; }
+  .titik-pengunjung { fill: var(--aksen); }
+  .titik-klik { fill: var(--tinta); }
+  .tabel-bungkus { overflow-x: auto; }
+  table.tabel { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+  .tabel th, .tabel td { text-align: left; padding: 0.65rem 0.5rem 0.65rem 0; border-bottom: 1px solid var(--garis); vertical-align: top; }
+  .tabel th { font-weight: 600; font-size: 0.88rem; color: var(--tinta-lembut); }
+  .tabel .angka { text-align: right; white-space: nowrap; padding-left: 1rem; font-variant-numeric: tabular-nums; }
+  details.rincian { margin-top: 2rem; }
+  details.rincian summary { cursor: pointer; padding: 0.5rem 0; font-weight: 600; }
+  .cek { display: flex; gap: 0.6rem; align-items: flex-start; margin-top: 2.25rem; font-size: 0.93rem; }
+  .cek input { margin-top: 0.4rem; flex: none; }
+  .cek small { display: block; color: var(--tinta-lembut); font-size: 0.85rem; line-height: 1.5; margin-top: 0.15rem; }
+
   @media (max-width: 30rem) {
     .tombol-form .tbl-bahaya { margin-left: 0; }
     .aksi { width: 100%; }
@@ -352,6 +399,14 @@ const potong = (t, n) => {
   return (i > n * 0.6 ? p.slice(0, i) : p).replace(/[\s,.;:]+$/, "") + "…";
 };
 
+/* Hari untuk statistik dihitung menurut WIB (UTC+7), sama dengan yang dicatat situs. */
+const hariWIB = (mundur = 0) => new Date(Date.now() + 7 * 3600 * 1000 - mundur * 86400000).toISOString().slice(0, 10);
+const tglPendek = iso => {
+  try { return new Date(iso + "T00:00:00Z").toLocaleDateString("id-ID", { day: "numeric", month: "short", timeZone: "UTC" }); }
+  catch { return iso; }
+};
+const angka = n => Number(n || 0).toLocaleString("id-ID");
+
 let tToast;
 function toast(pesan, jenis) {
   const el = $("#toast");
@@ -398,6 +453,8 @@ let kotor = false;          /* ada perubahan di editor yang belum disimpan */
 let hashAktif = "";
 let abaikanHash = false;
 const filter = { q: "", status: "", kat: "" };
+const periode = { preset: 30, dari: "", sampai: "" };   /* periode statistik; preset null = tanggal pilihan sendiri */
+let tokenStat = 0;          /* penanda agar hasil lama tidak menimpa hasil baru */
 
 function urut() {
   semua.sort((a, b) => (a.tanggal < b.tanggal ? 1 : a.tanggal > b.tanggal ? -1 : 0));
@@ -467,6 +524,10 @@ const kartuGalat = (judul, isi, tombol) => `<div class="kartu galat-kartu">
 function kerangka() {
   root.innerHTML = `<header class="bar"><div class="bar-dalam">
       <a class="logo" href="#/">HCK <em>Admin</em></a>
+      <nav class="menu-admin" aria-label="Menu admin">
+        <a href="#/" data-menu="tulisan">Tulisan</a>
+        <a href="#/statistik" data-menu="statistik">Statistik</a>
+      </nav>
       <div class="bar-kanan">
         <a href="index.html" target="_blank" rel="noopener">Lihat situs</a>
         <span class="email">${esc(pengguna.email || "")}</span>
@@ -506,11 +567,19 @@ async function masukKeAdmin() {
 }
 
 /* ---------- Rute ---------- */
+function tandaiMenu(nama) {
+  document.querySelectorAll(".menu-admin a").forEach(a => {
+    if (a.dataset.menu === nama) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+  });
+}
+
 function rute() {
   if (!pengguna || !$("#isi")) return;
   const h = (location.hash || "#/").replace(/^#\/?/, "");
   const [bagian, ...sisa] = h.split("/");
   window.scrollTo(0, 0);
+  tandaiMenu(bagian === "statistik" ? "statistik" : "tulisan");
+  if (bagian === "statistik") return statistik();
   if (bagian === "baru") return editor(null);
   if (bagian === "edit") {
     const slug = decodeURIComponent(sisa.join("/"));
@@ -663,6 +732,170 @@ async function imporContoh() {
     console.error(e);
     toast(pesanFs(e), "galat");
     tombol.disabled = false; tombol.textContent = `Impor ${CONTOH.length} tulisan contoh`;
+  }
+}
+
+/* ---------- Statistik ---------- */
+const BATAS_HARI = 366;
+const tambahHari = (iso, n) => new Date(new Date(iso + "T00:00:00Z").getTime() + n * 86400000).toISOString().slice(0, 10);
+const selisihHari = (a, b) => Math.round((new Date(b + "T00:00:00Z") - new Date(a + "T00:00:00Z")) / 86400000);
+
+async function ambilStatistik(dari, sampai) {
+  const snap = await F.getDocs(F.query(F.collection(db, "statistik"),
+    F.where("tanggal", ">=", dari), F.where("tanggal", "<=", sampai)));
+  const perHari = new Map(), perArtikel = new Map();
+  snap.docs.forEach(dok => {
+    const x = dok.data();
+    if (x.slug) {
+      const a = perArtikel.get(x.slug) || { slug: x.slug, tampilan: 0, klik: 0 };
+      a.tampilan += x.tampilan || 0; a.klik += x.klik || 0;
+      perArtikel.set(x.slug, a);
+    } else {
+      perHari.set(x.tanggal, x);
+    }
+  });
+  const hh = [], jumlah = selisihHari(dari, sampai);
+  for (let i = 0; i <= jumlah; i++) {
+    const t = tambahHari(dari, i), x = perHari.get(t) || {};
+    hh.push({ tanggal: t, pengunjung: x.pengunjung || 0, kunjungan: x.kunjungan || 0, tampilan: x.tampilan || 0, klik: x.klik || 0 });
+  }
+  return { hh, artikel: [...perArtikel.values()] };
+}
+
+function grafik(hh) {
+  const W = 680, H = 240, kiri = 42, kanan = 12, atas = 12, bawah = 28;
+  const maks = Math.max(1, ...hh.map(h => Math.max(h.pengunjung, h.klik)));
+  const dasar = Math.pow(10, Math.floor(Math.log10(maks)));
+  const puncak = [1, 2, 5, 10].map(m => m * dasar).find(v => v >= maks) || maks;
+  const n = hh.length, lebar = W - kiri - kanan, tinggi = H - atas - bawah;
+  const x = i => kiri + (n === 1 ? lebar / 2 : (i * lebar) / (n - 1));
+  const y = v => atas + tinggi - (v / puncak) * tinggi;
+  const jalur = k => hh.map((h, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(h[k]).toFixed(1)).join(" ");
+  const label = t => tglPendek(t) + (hh[0].tanggal.slice(0, 4) !== hh[n - 1].tanggal.slice(0, 4) ? " " + t.slice(0, 4) : "");
+  const kisi = [0, 0.5, 1].map(f => {
+    const v = Math.round(puncak * f), yy = y(v).toFixed(1);
+    return `<line class="kisi" x1="${kiri}" x2="${W - kanan}" y1="${yy}" y2="${yy}"/><text x="${kiri - 8}" y="${(+yy + 4).toFixed(1)}" text-anchor="end">${angka(v)}</text>`;
+  }).join("");
+  const idx = n === 1 ? [0] : [0, Math.floor((n - 1) / 2), n - 1];
+  const sumbuX = idx.map((i, k) =>
+    `<text x="${x(i).toFixed(1)}" y="${H - 8}" text-anchor="${n === 1 ? "middle" : k === 0 ? "start" : k === idx.length - 1 ? "end" : "middle"}">${esc(label(hh[i].tanggal))}</text>`).join("");
+  const titik = n <= 31 ? hh.map((h, i) =>
+    `<circle class="titik-pengunjung" cx="${x(i).toFixed(1)}" cy="${y(h.pengunjung).toFixed(1)}" r="3"><title>${esc(tglPendek(h.tanggal))}: ${angka(h.pengunjung)} pengunjung</title></circle>` +
+    `<circle class="titik-klik" cx="${x(i).toFixed(1)}" cy="${y(h.klik).toFixed(1)}" r="3"><title>${esc(tglPendek(h.tanggal))}: ${angka(h.klik)} klik</title></circle>`).join("") : "";
+  return `<svg class="grafik" viewBox="0 0 ${W} ${H}" role="img" aria-label="Grafik pengunjung dan klik per hari. Rinciannya ada di tabel di bawah.">
+    ${kisi}${sumbuX}
+    <path class="garis-pengunjung" d="${jalur("pengunjung")}"/>
+    <path class="garis-klik" d="${jalur("klik")}"/>${titik}</svg>`;
+}
+
+function tampilStatistik({ hh, artikel }) {
+  const jml = k => hh.reduce((s, h) => s + h[k], 0);
+  const judulDari = slug => (semua.find(a => a.slug === slug) || {}).judul || slug;
+  const kpi = [
+    ["pengunjung", "Pengunjung", "Peramban unik, dihitung sekali per hari"],
+    ["kunjungan", "Kunjungan", "Berapa kali situs dibuka dalam satu sesi"],
+    ["tampilan", "Halaman dilihat", "Semua halaman yang dibuka"],
+    ["klik", "Klik tulisan", "Klik pada judul atau Baca Selengkapnya"]
+  ].map(([k, nama, ket]) => `<div><strong>${angka(jml(k))}</strong><span class="nama">${nama}</span><small>${ket}</small></div>`).join("");
+
+  const kosong = ["pengunjung", "kunjungan", "tampilan", "klik"].every(k => jml(k) === 0);
+  const populer = artikel.slice().sort((a, b) => b.tampilan - a.tampilan || b.klik - a.klik).slice(0, 10);
+
+  return `<div class="kpi">${kpi}</div>
+    <section class="bagian-stat" aria-labelledby="h-grafik">
+      <h2 id="h-grafik">Pengunjung dan klik per hari</h2>
+      ${kosong ? '<p class="hasil-kosong">Belum ada data pada rentang ini. Angka mulai terhitung saat situs dibuka dengan Firebase aktif.</p>' : `
+      <div class="legenda">
+        <span><svg width="28" height="8" aria-hidden="true"><line x1="0" y1="4" x2="28" y2="4" class="garis-pengunjung"/></svg>Pengunjung</span>
+        <span><svg width="28" height="8" aria-hidden="true"><line x1="0" y1="4" x2="28" y2="4" class="garis-klik"/></svg>Klik tulisan</span>
+      </div>${grafik(hh)}`}
+    </section>
+    <section class="bagian-stat" aria-labelledby="h-populer">
+      <h2 id="h-populer">Tulisan paling banyak dibaca</h2>
+      ${populer.length ? `<div class="tabel-bungkus"><table class="tabel">
+        <thead><tr><th scope="col">Tulisan</th><th scope="col" class="angka">Dibaca</th><th scope="col" class="angka">Klik</th></tr></thead>
+        <tbody>${populer.map(a => `<tr><td>${esc(judulDari(a.slug))}</td><td class="angka">${angka(a.tampilan)}</td><td class="angka">${angka(a.klik)}</td></tr>`).join("")}</tbody>
+      </table></div>` : '<p class="hasil-kosong">Belum ada tulisan yang dibaca pada rentang ini.</p>'}
+    </section>
+    <details class="rincian">
+      <summary>Rincian per hari</summary>
+      <div class="tabel-bungkus"><table class="tabel">
+        <thead><tr><th scope="col">Tanggal</th><th scope="col" class="angka">Pengunjung</th><th scope="col" class="angka">Kunjungan</th><th scope="col" class="angka">Dilihat</th><th scope="col" class="angka">Klik</th></tr></thead>
+        <tbody>${hh.slice().reverse().map(h => `<tr><td>${esc(tglIndo(h.tanggal))}</td><td class="angka">${angka(h.pengunjung)}</td><td class="angka">${angka(h.kunjungan)}</td><td class="angka">${angka(h.tampilan)}</td><td class="angka">${angka(h.klik)}</td></tr>`).join("")}</tbody>
+      </table></div>
+    </details>`;
+}
+
+async function statistik() {
+  kotor = false;
+  document.title = "Statistik | Admin HCK";
+  const hariIniWIB = hariWIB(0);
+  if (periode.preset) { periode.sampai = hariIniWIB; periode.dari = hariWIB(periode.preset - 1); }
+  let abaikan = false;
+  try { abaikan = localStorage.getItem("hck-abaikan") === "1"; } catch {}
+
+  $("#isi").innerHTML = `
+    <div class="kepala-halaman"><h1>Statistik</h1></div>
+    <div class="filter-stat">
+      <div class="rentang" role="group" aria-label="Rentang cepat">
+        ${[7, 30, 90].map(n => `<button type="button" class="tbl tbl-kecil" data-hari="${n}" aria-pressed="${periode.preset === n}">${n} hari terakhir</button>`).join("")}
+      </div>
+      <form class="tanggal-form" id="f-tanggal" novalidate>
+        <label>Dari tanggal<input type="date" id="t-dari" max="${hariIniWIB}"></label>
+        <label>Sampai tanggal<input type="date" id="t-sampai" max="${hariIniWIB}"></label>
+        <button class="tbl tbl-kecil" type="submit">Terapkan</button>
+      </form>
+    </div>
+    <p class="galat" id="t-galat" role="alert"></p>
+    <p class="meta" id="ket-periode"></p>
+    <div id="stat-isi"><p class="tengah">Memuat statistik…</p></div>
+    <label class="cek"><input type="checkbox" id="abaikan">
+      <span>Jangan hitung kunjungan dari peramban ini
+        <small>Centang agar kunjungan Anda sendiri saat menguji situs tidak ikut terhitung. Berlaku bila panel admin dan situs dibuka dari alamat yang sama. Hari dihitung menurut WIB.</small></span></label>`;
+
+  $("#t-dari").value = periode.dari;
+  $("#t-sampai").value = periode.sampai;
+  $("#ket-periode").textContent = `Menampilkan ${tglIndo(periode.dari)} sampai ${tglIndo(periode.sampai)} (${selisihHari(periode.dari, periode.sampai) + 1} hari)`;
+
+  document.querySelectorAll("[data-hari]").forEach(b => {
+    b.onclick = () => { periode.preset = Number(b.dataset.hari); statistik(); };
+  });
+  $("#f-tanggal").onsubmit = e => {
+    e.preventDefault();
+    const dari = $("#t-dari").value, sampai = $("#t-sampai").value, galat = $("#t-galat");
+    if (!dari || !sampai) { galat.textContent = "Isi tanggal awal dan tanggal akhir."; return; }
+    if (dari > sampai) { galat.textContent = "Tanggal awal tidak boleh setelah tanggal akhir."; return; }
+    if (sampai > hariIniWIB) { galat.textContent = "Tanggal akhir tidak boleh melewati hari ini."; return; }
+    if (selisihHari(dari, sampai) + 1 > BATAS_HARI) { galat.textContent = `Rentang paling lama ${BATAS_HARI} hari.`; return; }
+    periode.preset = null; periode.dari = dari; periode.sampai = sampai;
+    statistik();
+  };
+
+  $("#abaikan").checked = abaikan;
+  $("#abaikan").onchange = e => {
+    try {
+      if (e.target.checked) localStorage.setItem("hck-abaikan", "1"); else localStorage.removeItem("hck-abaikan");
+      toast(e.target.checked ? "Kunjungan dari peramban ini tidak dihitung." : "Kunjungan dari peramban ini dihitung lagi.");
+    } catch {
+      e.target.checked = false;
+      toast("Peramban ini tidak mengizinkan menyimpan pengaturan.", "galat");
+    }
+  };
+
+  const token = ++tokenStat;
+  try {
+    const data = await ambilStatistik(periode.dari, periode.sampai);
+    if (token !== tokenStat || !$("#stat-isi")) return;
+    $("#stat-isi").innerHTML = tampilStatistik(data);
+  } catch (e) {
+    console.error(e);
+    if (token !== tokenStat || !$("#stat-isi")) return;
+    $("#stat-isi").innerHTML = kartuGalat("Statistik gagal dimuat",
+      `<p>${e.code === "permission-denied"
+        ? "Aturan Firestore belum mengizinkan admin membaca statistik. Salin aturan terbaru dari <code>firestore.rules</code>, lalu klik Publish di tab Rules Firebase."
+        : esc(pesanFs(e))}</p>`,
+      '<button class="tbl" id="stat-ulang" type="button">Coba lagi</button>');
+    $("#stat-ulang").onclick = statistik;
   }
 }
 
