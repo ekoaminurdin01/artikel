@@ -210,6 +210,19 @@
   #toast.galat-toast { background: var(--bahaya); color: var(--kertas); }
   @media (prefers-reduced-motion: reduce) { #toast { transition: none; } }
 
+  /* Header tombol ganda */
+  .kepala-tombol { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  #impor-cadangan-input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+  /* Profil */
+  .kekuatan { display: flex; gap: 0.3rem; margin-top: 0.5rem; }
+  .kekuatan i { flex: 1; height: 4px; background: var(--garis); border-radius: 2px; }
+  .kekuatan i.aktif-lemah { background: var(--bahaya); }
+  .kekuatan i.aktif-sedang { background: #b8862f; }
+  .kekuatan i.aktif-kuat { background: var(--sukses); }
+  .kekuatan-teks { font-size: 0.85rem; color: var(--tinta-lembut); margin-top: 0.3rem; }
+  .kartu + .kartu { margin-top: 1.5rem; }
+
   /* Menu admin */
   .menu-admin { display: flex; gap: 0.25rem; flex: 1 1 auto; margin-left: 0.5rem; }
   .menu-admin a {
@@ -436,8 +449,11 @@ const pesanAuth = kode => ({
   "auth/too-many-requests": "Terlalu banyak percobaan. Tunggu beberapa menit, lalu coba lagi.",
   "auth/network-request-failed": "Tidak ada koneksi internet. Periksa jaringan, lalu coba lagi.",
   "auth/operation-not-allowed": "Metode masuk email dan kata sandi belum diaktifkan di Firebase Authentication.",
-  "auth/user-disabled": "Akun ini dinonaktifkan di Firebase."
-}[kode] || "Gagal masuk. Coba lagi.");
+  "auth/user-disabled": "Akun ini dinonaktifkan di Firebase.",
+  "auth/weak-password": "Kata sandi baru terlalu lemah, minimal 6 karakter.",
+  "auth/requires-recent-login": "Demi keamanan, masuk ulang dahulu sebelum mengganti kata sandi.",
+  "auth/missing-password": "Kata sandi belum diisi."
+}[kode] || "Gagal mengganti kata sandi. Coba lagi.");
 
 const pesanFs = e => ({
   "permission-denied": "Ditolak: akun ini belum punya izin admin. Periksa UID di aturan Firestore.",
@@ -527,6 +543,7 @@ function kerangka() {
       <nav class="menu-admin" aria-label="Menu admin">
         <a href="#/" data-menu="tulisan">Tulisan</a>
         <a href="#/statistik" data-menu="statistik">Statistik</a>
+        <a href="#/profil" data-menu="profil">Profil</a>
       </nav>
       <div class="bar-kanan">
         <a href="index.html" target="_blank" rel="noopener">Lihat situs</a>
@@ -578,8 +595,9 @@ function rute() {
   const h = (location.hash || "#/").replace(/^#\/?/, "");
   const [bagian, ...sisa] = h.split("/");
   window.scrollTo(0, 0);
-  tandaiMenu(bagian === "statistik" ? "statistik" : "tulisan");
+  tandaiMenu(bagian === "statistik" ? "statistik" : bagian === "profil" ? "profil" : "tulisan");
   if (bagian === "statistik") return statistik();
+  if (bagian === "profil") return profil();
   if (bagian === "baru") return editor(null);
   if (bagian === "edit") {
     const slug = decodeURIComponent(sisa.join("/"));
@@ -610,7 +628,14 @@ function daftarTulisan() {
   const opsiKat = KATEGORI.map(k => `<option value="${k.id}">${esc(k.nama)}</option>`).join("");
 
   $("#isi").innerHTML = `
-    <div class="kepala-halaman"><h1>Tulisan</h1><a class="tbl tbl-utama" href="#/baru">Tulisan baru</a></div>
+    <div class="kepala-halaman"><h1>Tulisan</h1>
+      <div class="kepala-tombol">
+        ${n > 0 ? '<button class="tbl tbl-kecil" id="ekspor" type="button">Cadangkan (.json)</button>' : ""}
+        <button class="tbl tbl-kecil" id="buka-impor" type="button">Pulihkan dari cadangan</button>
+        <input type="file" id="impor-cadangan-input" accept="application/json,.json">
+        <a class="tbl tbl-utama" href="#/baru">Tulisan baru</a>
+      </div>
+    </div>
     <div class="stat" aria-label="Ringkasan">
       <div><strong>${n}</strong><span>Total</span></div>
       <div><strong>${t}</strong><span>Terbit</span></div>
@@ -633,6 +658,10 @@ function daftarTulisan() {
         <select id="fk" aria-label="Filter kategori"><option value="">Semua kategori</option>${opsiKat}</select>
       </div>
       <ul class="daftar" id="hasil"></ul>`}`;
+
+  $("#buka-impor").onclick = () => $("#impor-cadangan-input").click();
+  $("#impor-cadangan-input").onchange = e => { const f = e.target.files[0]; e.target.value = ""; if (f) pulihkanCadangan(f); };
+  if (n > 0) $("#ekspor").onclick = eksporCadangan;
 
   if (n === 0) {
     $("#impor").onclick = imporContoh;
@@ -709,6 +738,73 @@ async function hapusTulisan(a) {
     await F.deleteDoc(F.doc(db, "artikel", a.slug));
     semua = semua.filter(x => x.slug !== a.slug);
     toast("Dihapus.");
+    daftarTulisan();
+  } catch (e) {
+    console.error(e);
+    toast(pesanFs(e), "galat");
+  }
+}
+
+function eksporCadangan() {
+  const isi = {
+    situs: "Hanya Catatan Kecil",
+    diekspor: new Date().toISOString(),
+    jumlah: semua.length,
+    tulisan: semua.map(a => ({
+      slug: a.slug, judul: a.judul, kategori: a.kategori, tanggal: a.tanggal,
+      ringkas: a.ringkas, isi: a.isi, status: a.status
+    }))
+  };
+  const blob = new Blob([JSON.stringify(isi, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const t = new Date(), p = n => String(n).padStart(2, "0");
+  const nama = `cadangan-hck-${t.getFullYear()}-${p(t.getMonth() + 1)}-${p(t.getDate())}.json`;
+  const a = document.createElement("a");
+  a.href = url; a.download = nama; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast(`Cadangan ${semua.length} tulisan diunduh.`);
+}
+
+function cadanganValid(x) {
+  return x && Array.isArray(x.tulisan) && x.tulisan.length > 0 && x.tulisan.every(t =>
+    t && typeof t.slug === "string" && SLUG_VALID.test(t.slug)
+    && typeof t.judul === "string" && Array.isArray(t.isi)
+    && (t.status === "terbit" || t.status === "draf"));
+}
+
+async function pulihkanCadangan(file) {
+  let data;
+  try {
+    data = JSON.parse(await file.text());
+  } catch (e) {
+    toast("Berkas ini bukan cadangan JSON yang valid.", "galat");
+    return;
+  }
+  if (!cadanganValid(data)) {
+    toast("Isi berkas tidak cocok dengan format cadangan HCK.", "galat");
+    return;
+  }
+  const daftar = data.tulisan;
+  const ya = await konfirmasi(
+    `Pulihkan ${daftar.length} tulisan?`,
+    "Tulisan dengan slug yang sama akan ditimpa oleh isi cadangan. Tulisan lain yang sudah ada di database tidak akan dihapus atau berubah.",
+    "Pulihkan");
+  if (!ya) return;
+  try {
+    for (let i = 0; i < daftar.length; i += 400) {
+      const potongan = daftar.slice(i, i + 400);
+      const batch = F.writeBatch(db);
+      potongan.forEach(t => {
+        batch.set(F.doc(db, "artikel", t.slug), {
+          judul: t.judul, kategori: t.kategori || KATEGORI[0].id, tanggal: t.tanggal || hariIni(),
+          ringkas: t.ringkas || "", isi: t.isi, status: t.status,
+          dibuat: F.serverTimestamp(), diperbarui: F.serverTimestamp()
+        }, { merge: true });
+      });
+      await batch.commit();
+    }
+    await muatSemua();
+    toast(`${daftar.length} tulisan dipulihkan.`);
     daftarTulisan();
   } catch (e) {
     console.error(e);
@@ -897,6 +993,86 @@ async function statistik() {
       '<button class="tbl" id="stat-ulang" type="button">Coba lagi</button>');
     $("#stat-ulang").onclick = statistik;
   }
+}
+
+/* ---------- Profil ---------- */
+function kekuatanSandi(s) {
+  if (!s) return 0;
+  let skor = 0;
+  if (s.length >= 8) skor++;
+  if (s.length >= 12) skor++;
+  if (/[a-z]/.test(s) && /[A-Z]/.test(s)) skor++;
+  if (/[0-9]/.test(s)) skor++;
+  if (/[^A-Za-z0-9]/.test(s)) skor++;
+  return Math.min(3, Math.ceil(skor / 1.6));
+}
+
+function profil() {
+  kotor = false;
+  document.title = "Profil | Admin HCK";
+  $("#isi").innerHTML = `
+    <div class="kepala-halaman"><h1>Profil</h1></div>
+    <div class="kartu">
+      <h2>Akun</h2>
+      <p>Masuk sebagai <strong>${esc(pengguna.email || "")}</strong>.</p>
+    </div>
+    <div class="kartu">
+      <h2>Ganti kata sandi</h2>
+      <p>Masukkan kata sandi saat ini, lalu kata sandi baru.</p>
+      <form id="f-sandi" novalidate>
+        <label class="medan"><span class="label">Kata sandi saat ini</span>
+          <input type="password" id="p-lama" autocomplete="current-password" required></label>
+        <label class="medan"><span class="label">Kata sandi baru</span>
+          <input type="password" id="p-baru" autocomplete="new-password" minlength="6" required>
+          <div class="kekuatan" aria-hidden="true"><i id="k1"></i><i id="k2"></i><i id="k3"></i></div>
+          <small id="p-ket" class="kekuatan-teks">Minimal 6 karakter. Kombinasi huruf besar, huruf kecil, angka, dan simbol membuatnya lebih kuat.</small></label>
+        <label class="medan"><span class="label">Ulangi kata sandi baru</span>
+          <input type="password" id="p-ulang" autocomplete="new-password" required></label>
+        <p class="galat" id="p-galat" role="alert"></p>
+        <div class="tombol-form"><button class="tbl tbl-utama" type="submit" id="p-simpan">Ganti kata sandi</button></div>
+      </form>
+    </div>`;
+
+  const LABEL = ["", "Lemah", "Sedang", "Kuat"], KELAS = ["", "aktif-lemah", "aktif-sedang", "aktif-kuat"];
+  $("#p-baru").oninput = () => {
+    kotor = true;
+    const skor = kekuatanSandi($("#p-baru").value);
+    [1, 2, 3].forEach(n => { $("#k" + n).className = n <= skor ? KELAS[skor] : ""; });
+    $("#p-ket").textContent = $("#p-baru").value
+      ? (skor ? "Kekuatan: " + LABEL[skor] + "." : "Minimal 6 karakter.")
+      : "Minimal 6 karakter. Kombinasi huruf besar, huruf kecil, angka, dan simbol membuatnya lebih kuat.";
+  };
+  ["p-lama", "p-ulang"].forEach(id => { $("#" + id).oninput = () => { kotor = true; }; });
+
+  $("#f-sandi").onsubmit = async e => {
+    e.preventDefault();
+    const lama = $("#p-lama").value, baru = $("#p-baru").value, ulang = $("#p-ulang").value;
+    const galat = $("#p-galat");
+    galat.textContent = "";
+    if (!lama) { galat.textContent = "Isi kata sandi saat ini."; $("#p-lama").focus(); return; }
+    if (baru.length < 6) { galat.textContent = "Kata sandi baru minimal 6 karakter."; $("#p-baru").focus(); return; }
+    if (baru !== ulang) { galat.textContent = "Kata sandi baru dan pengulangannya tidak sama."; $("#p-ulang").focus(); return; }
+    if (baru === lama) { galat.textContent = "Kata sandi baru harus berbeda dari kata sandi saat ini."; $("#p-baru").focus(); return; }
+    const tombol = $("#p-simpan");
+    tombol.disabled = true; tombol.textContent = "Menyimpan…";
+    try {
+      const kredensial = Au.EmailAuthProvider.credential(pengguna.email, lama);
+      await Au.reauthenticateWithCredential(pengguna, kredensial);
+      await Au.updatePassword(pengguna, baru);
+      kotor = false;
+      toast("Kata sandi berhasil diganti.");
+      $("#f-sandi").reset();
+      [1, 2, 3].forEach(n => { $("#k" + n).className = ""; });
+      $("#p-ket").textContent = "Minimal 6 karakter. Kombinasi huruf besar, huruf kecil, angka, dan simbol membuatnya lebih kuat.";
+    } catch (err) {
+      console.error(err);
+      galat.textContent = err.code === "auth/invalid-credential" || err.code === "auth/wrong-password"
+        ? "Kata sandi saat ini salah." : pesanAuth(err.code);
+      if (galat.textContent.includes("Kata sandi saat ini salah")) $("#p-lama").focus();
+    } finally {
+      tombol.disabled = false; tombol.textContent = "Ganti kata sandi";
+    }
+  };
 }
 
 /* ---------- Editor ---------- */
