@@ -214,6 +214,20 @@
   .kepala-tombol { display: flex; gap: 0.5rem; flex-wrap: wrap; }
   #impor-cadangan-input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
+  /* Kata sandi dengan tombol lihat/sembunyikan */
+  .sandi-bungkus { position: relative; }
+  .sandi-bungkus input { padding-right: 2.6rem; }
+  .sandi-bungkus .mata {
+    position: absolute; right: 0.2rem; top: 50%; transform: translateY(-50%);
+    display: flex; align-items: center; justify-content: center;
+    width: 2.3rem; height: 2.3rem; background: none; border: 0; border-radius: 2px;
+    padding: 0; cursor: pointer; color: var(--tinta-lembut);
+  }
+  .sandi-bungkus .mata:hover { color: var(--tinta); }
+  .sandi-bungkus .mata svg { width: 1.2rem; height: 1.2rem; display: block; }
+  .sandi-bungkus .mata .garis-coret { opacity: 0; }
+  .sandi-bungkus .mata.tampil .garis-coret { opacity: 1; }
+
   /* Profil */
   .kekuatan { display: flex; gap: 0.3rem; margin-top: 0.5rem; }
   .kekuatan i { flex: 1; height: 4px; background: var(--garis); border-radius: 2px; }
@@ -421,6 +435,33 @@ const tglPendek = iso => {
 const angka = n => Number(n || 0).toLocaleString("id-ID");
 
 let tToast;
+const IKON_MATA = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/>
+  <line class="garis-coret" x1="2.5" y1="21.5" x2="21.5" y2="2.5"/></svg>`;
+
+function kolomSandi(id, label, opsiInput) {
+  return `<label class="medan"><span class="label">${label}</span>
+    <div class="sandi-bungkus"><input type="password" id="${id}" ${opsiInput}>
+      <button type="button" class="mata" data-target="${id}" aria-pressed="false" aria-label="Tampilkan kata sandi">${IKON_MATA}</button>
+    </div></label>`;
+}
+function pasangMata(induk) {
+  induk.querySelectorAll(".mata").forEach(btn => {
+    btn.onclick = () => {
+      const inp = document.getElementById(btn.dataset.target);
+      const tampil = inp.type === "password";
+      inp.type = tampil ? "text" : "password";
+      btn.classList.toggle("tampil", tampil);
+      btn.setAttribute("aria-pressed", String(tampil));
+      btn.setAttribute("aria-label", tampil ? "Sembunyikan kata sandi" : "Tampilkan kata sandi");
+    };
+  });
+}
+function sembunyikanSandi(induk) {
+  induk.querySelectorAll(".sandi-bungkus input").forEach(i => { i.type = "password"; });
+  induk.querySelectorAll(".mata").forEach(b => { b.classList.remove("tampil"); b.setAttribute("aria-pressed", "false"); b.setAttribute("aria-label", "Tampilkan kata sandi"); });
+}
+
 function toast(pesan, jenis) {
   const el = $("#toast");
   el.textContent = pesan;
@@ -510,12 +551,12 @@ function tampilMasuk() {
     <form id="f-masuk" novalidate>
       <label class="medan"><span class="label">Email</span>
         <input type="email" id="m-email" autocomplete="username" required></label>
-      <label class="medan"><span class="label">Kata sandi</span>
-        <input type="password" id="m-sandi" autocomplete="current-password" required></label>
+      ${kolomSandi("m-sandi", "Kata sandi", 'autocomplete="current-password" required')}
       <p class="galat" id="m-galat" role="alert"></p>
       <button class="tbl tbl-utama" type="submit" id="m-tombol">Masuk</button>
     </form>
   </main>`;
+  pasangMata(root);
   $("#m-email").focus();
   $("#f-masuk").onsubmit = async e => {
     e.preventDefault();
@@ -1020,18 +1061,18 @@ function profil() {
       <h2>Ganti kata sandi</h2>
       <p>Masukkan kata sandi saat ini, lalu kata sandi baru.</p>
       <form id="f-sandi" novalidate>
-        <label class="medan"><span class="label">Kata sandi saat ini</span>
-          <input type="password" id="p-lama" autocomplete="current-password" required></label>
+        ${kolomSandi("p-lama", "Kata sandi saat ini", 'autocomplete="current-password" required')}
         <label class="medan"><span class="label">Kata sandi baru</span>
-          <input type="password" id="p-baru" autocomplete="new-password" minlength="6" required>
+          <div class="sandi-bungkus"><input type="password" id="p-baru" autocomplete="new-password" minlength="6" required>
+            <button type="button" class="mata" data-target="p-baru" aria-pressed="false" aria-label="Tampilkan kata sandi">${IKON_MATA}</button></div>
           <div class="kekuatan" aria-hidden="true"><i id="k1"></i><i id="k2"></i><i id="k3"></i></div>
           <small id="p-ket" class="kekuatan-teks">Minimal 6 karakter. Kombinasi huruf besar, huruf kecil, angka, dan simbol membuatnya lebih kuat.</small></label>
-        <label class="medan"><span class="label">Ulangi kata sandi baru</span>
-          <input type="password" id="p-ulang" autocomplete="new-password" required></label>
+        ${kolomSandi("p-ulang", "Ulangi kata sandi baru", 'autocomplete="new-password" required')}
         <p class="galat" id="p-galat" role="alert"></p>
         <div class="tombol-form"><button class="tbl tbl-utama" type="submit" id="p-simpan">Ganti kata sandi</button></div>
       </form>
     </div>`;
+  pasangMata($("#isi"));
 
   const LABEL = ["", "Lemah", "Sedang", "Kuat"], KELAS = ["", "aktif-lemah", "aktif-sedang", "aktif-kuat"];
   $("#p-baru").oninput = () => {
@@ -1062,6 +1103,7 @@ function profil() {
       kotor = false;
       toast("Kata sandi berhasil diganti.");
       $("#f-sandi").reset();
+      sembunyikanSandi($("#isi"));
       [1, 2, 3].forEach(n => { $("#k" + n).className = ""; });
       $("#p-ket").textContent = "Minimal 6 karakter. Kombinasi huruf besar, huruf kecil, angka, dan simbol membuatnya lebih kuat.";
     } catch (err) {
