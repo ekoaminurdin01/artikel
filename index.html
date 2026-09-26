@@ -151,9 +151,10 @@
   }
   .iklan-label { display: block; font-size: 0.78rem; color: var(--tinta-lembut); margin-bottom: 0.5rem; }
   .iklan-slot {
-    min-height: 6.5rem; display: grid; place-items: center;
+    min-height: 6.5rem; display: flex; justify-content: center; overflow: hidden;
     color: var(--tinta-lembut); font-size: 0.85rem; font-style: italic;
   }
+  .iklan-bingkai { display: block; max-width: 100%; }
 
   /* Pilih kategori */
   .kategori-daftar { display: grid; grid-template-columns: 1fr; margin-top: 0.25rem; }
@@ -467,10 +468,22 @@
 
   /* Ruang iklan. Untuk memasang AdSense, tempel kode unit iklan Anda
      di dalam .iklan-slot dan hapus teks placeholder. */
+  /* Kode iklan Adsterra. Dibungkus dalam iframe (srcdoc) karena invoke.js
+     memakai document.write, dan halaman ini menyisipkan HTML lewat innerHTML,
+     tempat <script> biasa tidak otomatis berjalan. Iframe memberi invoke.js
+     dokumen sendiri yang aman, tanpa menabrak isi situs. */
+  var IKLAN_LEBAR = 300, IKLAN_TINGGI = 250, IKLAN_KEY = "2e538a2780784babed61661d7ce9f09a";
+  var IKLAN_ISI_IFRAME =
+    "<!doctype html><html><head><style>*{margin:0;padding:0}</style></head><body>" +
+    "<script>atOptions={key:'" + IKLAN_KEY + "',format:'iframe',height:" + IKLAN_TINGGI + ",width:" + IKLAN_LEBAR + ",params:{}};<\/script>" +
+    "<script src='https://www.highrevenueformat.com/" + IKLAN_KEY + "/invoke.js'><\/script>" +
+    "</body></html>";
+
   function iklan() {
     return '<aside class="iklan" aria-label="Iklan">' +
       '<span class="iklan-label">Iklan</span>' +
-      '<div class="iklan-slot"><!-- Tempel kode unit iklan AdSense di sini -->Ruang iklan</div>' +
+      '<div class="iklan-slot"><iframe class="iklan-bingkai" title="Iklan" loading="lazy" scrolling="no" frameborder="0"' +
+        ' width="' + IKLAN_LEBAR + '" height="' + IKLAN_TINGGI + '" srcdoc="' + esc(IKLAN_ISI_IFRAME) + '"></iframe></div>' +
       '</aside>';
   }
 
@@ -618,7 +631,7 @@
       '</header>' +
       '<div class="isi">' + paragraf + '</div>' +
       '</article>' + nav + tk + langganan();
-    return { html: html, judul: a.judul + " | " + NAMA_SITUS, menu: k.id };
+    return { html: html, judul: a.judul + " | " + NAMA_SITUS, menu: k.id, slug: a.slug };
   }
 
   function tampilTentang() {
@@ -635,6 +648,8 @@
       '<p>Halaman ini menjelaskan bagaimana Hanya Catatan Kecil memperlakukan informasi pengunjung.</p>' +
       '<h2>Informasi yang dikumpulkan</h2>' +
       '<p>Situs ini tidak meminta Anda membuat akun atau mengisi data pribadi untuk membaca. Server dan layanan analitik dapat mencatat data teknis umum, seperti jenis peramban, halaman yang dibuka, dan waktu kunjungan.</p>' +
+      '<h2>Statistik kunjungan</h2>' +
+      '<p>Situs ini menghitung jumlah kunjungan dan klik secara anonim, tanpa nama, alamat IP, atau data pribadi lain, untuk mengetahui tulisan mana yang dibaca. Peramban Anda menyimpan penanda kecil agar kunjungan yang sama tidak dihitung berulang dalam sehari.</p>' +
       '<h2>Cookie dan iklan</h2>' +
       '<p>Situs ini dapat menampilkan iklan dari Google AdSense. Google dan mitranya dapat memakai cookie untuk menayangkan iklan berdasarkan kunjungan Anda ke situs ini dan situs lain. Anda dapat mengatur atau menonaktifkan iklan yang dipersonalisasi melalui pengaturan iklan Google, dan mengatur cookie melalui peramban Anda.</p>' +
       '<h2>Tautan ke situs lain</h2>' +
@@ -679,6 +694,7 @@
      situs tetap tampil dengan contoh bawaan.
      --------------------------------------------------------------- */
   var memuat = !!(window.HCK_FIREBASE && window.HCK_FIREBASE.apiKey);
+  var stat = null;   /* koneksi Firestore untuk statistik, terisi bila Firebase berhasil dimuat */
 
   function muatDariFirebase() {
     if (!memuat) return;
@@ -686,6 +702,7 @@
     Promise.all([import(V + "firebase-app.js"), import(V + "firebase-firestore.js")])
       .then(function (m) {
         var db = m[1].getFirestore(m[0].initializeApp(window.HCK_FIREBASE));
+        stat = { F: m[1], db: db };
         return m[1].getDocs(m[1].query(m[1].collection(db, "artikel"), m[1].where("status", "==", "terbit")));
       })
       .then(function (snap) {
@@ -699,8 +716,44 @@
         ARTIKEL.length = 0;
         daftar.forEach(function (a) { ARTIKEL.push(a); });
       })
-      .catch(function (e) { console.warn("Firebase gagal dimuat, memakai contoh bawaan.", e); })
+      .catch(function (e) { stat = null; console.warn("Firebase gagal dimuat, memakai contoh bawaan.", e); })
       .then(function () { memuat = false; rute(); });
+  }
+
+  /* ---------------------------------------------------------------
+     Statistik anonim: hanya angka hitungan per hari (tanpa nama, IP,
+     atau data pribadi). Disimpan di koleksi "statistik":
+       h_YYYY-MM-DD        kunjungan, pengunjung, tampilan, klik (seluruh situs)
+       a_YYYY-MM-DD_slug   tampilan, klik (per tulisan)
+     Hari dihitung menurut WIB (UTC+7).
+     --------------------------------------------------------------- */
+  function hariWIB() { return new Date(Date.now() + 7 * 3600 * 1000).toISOString().slice(0, 10); }
+  function bolehCatat() {
+    try { return localStorage.getItem("hck-abaikan") !== "1"; } catch (e) { return true; }
+  }
+  function kirim(harian, slug, artikel) {
+    if (!stat || !bolehCatat()) return;
+    try {
+      var F = stat.F, tgl = hariWIB(), b = F.writeBatch(stat.db), k, d = { tanggal: tgl };
+      for (k in harian) d[k] = F.increment(harian[k]);
+      b.set(F.doc(stat.db, "statistik", "h_" + tgl), d, { merge: true });
+      if (slug && artikel) {
+        var a = { tanggal: tgl, slug: slug };
+        for (k in artikel) a[k] = F.increment(artikel[k]);
+        b.set(F.doc(stat.db, "statistik", "a_" + tgl + "_" + slug), a, { merge: true });
+      }
+      b.commit().catch(function () {});
+    } catch (e) {}
+  }
+  function catatKunjungan(slug) {
+    var h = { tampilan: 1 };
+    try {
+      /* Kunjungan: sekali per sesi peramban. Pengunjung: sekali per peramban per hari. */
+      if (!sessionStorage.getItem("hck-sesi")) { sessionStorage.setItem("hck-sesi", "1"); h.kunjungan = 1; }
+      var t = hariWIB();
+      if (localStorage.getItem("hck-terakhir") !== t) { localStorage.setItem("hck-terakhir", t); h.pengunjung = 1; }
+    } catch (e) {}
+    kirim(h, slug, slug ? { tampilan: 1 } : null);
   }
 
   var pertama = true;
@@ -734,6 +787,7 @@
     window.scrollTo(0, 0);
     if (!pertama) document.getElementById("utama").focus({ preventScroll: true });
     pertama = false;
+    catatKunjungan(hasil.slug);
   }
 
   document.getElementById("lewati").addEventListener("click", function (e) {
@@ -760,6 +814,13 @@
     } else {
       status.textContent = "Terima kasih. Cek surelmu untuk konfirmasi langganan.";
     }
+  });
+
+  document.getElementById("isi-halaman").addEventListener("click", function (e) {
+    var a = e.target.closest ? e.target.closest(".entri h3 a, .baca-lanjut") : null;
+    if (!a) return;
+    var m = (a.getAttribute("href") || "").match(/^#\/artikel\/([a-z0-9-]+)$/);
+    if (m) kirim({ klik: 1 }, m[1], { klik: 1 });
   });
 
   window.addEventListener("hashchange", rute);
