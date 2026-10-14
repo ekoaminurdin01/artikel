@@ -142,20 +142,6 @@
   }
   .tombol:hover { background: var(--tinta); color: var(--kertas); }
 
-  /* Iklan */
-  .iklan {
-    margin: 2.5rem 0; padding: 0.6rem 0.9rem 1rem;
-    background: var(--kertas-2);
-    border: 1px dashed var(--garis);
-    text-align: center;
-  }
-  .iklan-label { display: block; font-size: 0.78rem; color: var(--tinta-lembut); margin-bottom: 0.5rem; }
-  .iklan-slot {
-    min-height: 6.5rem; display: flex; justify-content: center; overflow: hidden;
-    color: var(--tinta-lembut); font-size: 0.85rem; font-style: italic;
-  }
-  .iklan-bingkai { display: block; max-width: 100%; }
-
   /* Pilih kategori */
   .kategori-daftar { display: grid; grid-template-columns: 1fr; margin-top: 0.25rem; }
   @media (min-width: 40rem) {
@@ -188,7 +174,6 @@
     font-family: var(--font-judul); float: left;
     font-size: 4.6em; line-height: 0.8; padding: 0.06em 0.1em 0 0;
   }
-  .isi .iklan { margin: 2.25rem 0; }
   .penutup { margin-top: 2rem; font-style: italic; color: var(--tinta-lembut); }
 
   .sebelum-sesudah {
@@ -466,27 +451,6 @@
     return ARTIKEL.filter(function (a) { return a.kategori === id; }).length;
   }
 
-  /* Ruang iklan. Untuk memasang AdSense, tempel kode unit iklan Anda
-     di dalam .iklan-slot dan hapus teks placeholder. */
-  /* Kode iklan Adsterra. Dibungkus dalam iframe (srcdoc) karena invoke.js
-     memakai document.write, dan halaman ini menyisipkan HTML lewat innerHTML,
-     tempat <script> biasa tidak otomatis berjalan. Iframe memberi invoke.js
-     dokumen sendiri yang aman, tanpa menabrak isi situs. */
-  var IKLAN_LEBAR = 300, IKLAN_TINGGI = 250, IKLAN_KEY = "2e538a2780784babed61661d7ce9f09a";
-  var IKLAN_ISI_IFRAME =
-    "<!doctype html><html><head><style>*{margin:0;padding:0}</style></head><body>" +
-    "<script>atOptions={key:'" + IKLAN_KEY + "',format:'iframe',height:" + IKLAN_TINGGI + ",width:" + IKLAN_LEBAR + ",params:{}};<\/script>" +
-    "<script src='https://www.highrevenueformat.com/" + IKLAN_KEY + "/invoke.js'><\/script>" +
-    "</body></html>";
-
-  function iklan() {
-    return '<aside class="iklan" aria-label="Iklan">' +
-      '<span class="iklan-label">Iklan</span>' +
-      '<div class="iklan-slot"><iframe class="iklan-bingkai" title="Iklan" loading="lazy" scrolling="no" frameborder="0"' +
-        ' width="' + IKLAN_LEBAR + '" height="' + IKLAN_TINGGI + '" srcdoc="' + esc(IKLAN_ISI_IFRAME) + '"></iframe></div>' +
-      '</aside>';
-  }
-
   function langganan() {
     var aksi = LANGGANAN_URL ? ' action="' + esc(LANGGANAN_URL) + '" method="post" target="_blank"' : '';
     return '<section class="langganan" aria-labelledby="judul-langganan">' +
@@ -537,7 +501,7 @@
       return { html: html, judul: NAMA_SITUS, menu: "beranda" };
     }
     html += '<div class="tombol-baris"><a class="tombol" href="#/semua">Baca selengkapnya</a></div>' +
-      '</section>' + iklan() + pilihKategori() + langganan();
+      '</section>' + pilihKategori() + langganan();
     return { html: html, judul: NAMA_SITUS, menu: "beranda" };
   }
 
@@ -565,7 +529,7 @@
     var html = '<h1 class="judul-bagian">Semua Tulisan</h1>';
     if (ARTIKEL.length === 0) html += '<p class="kosong-teks">Belum ada tulisan yang terbit.</p>';
     ARTIKEL.forEach(function (a) { html += entri(a); });
-    html += iklan() + pilihKategori();
+    html += pilihKategori();
     return { html: html, judul: "Semua Tulisan", menu: "" };
   }
 
@@ -590,12 +554,9 @@
     var k = kat(a.kategori);
 
     var paragraf = "";
-    var posisiIklan = a.isi.length > 2 ? 2 : a.isi.length;
-    a.isi.forEach(function (p, n) {
-      if (n === posisiIklan) paragraf += iklan();
+    a.isi.forEach(function (p) {
       paragraf += "<p>" + esc(p) + "</p>";
     });
-    if (posisiIklan === a.isi.length) paragraf += iklan();
 
     var lebih = ARTIKEL[i + 1];   /* lebih lama */
     var baru = ARTIKEL[i - 1];    /* lebih baru */
