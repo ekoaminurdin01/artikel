@@ -111,7 +111,7 @@
   .menu a[aria-current="page"] { border-bottom-color: var(--tinta); font-weight: 600; }
 
   /* Umum */
-  .halaman { padding: 3rem 0 4rem; }
+  .halaman { padding-block: 3rem 4rem; }
   .judul-bagian {
     font-family: var(--font-judul); font-weight: 400;
     font-size: clamp(1.9rem, 5vw, 2.6rem); line-height: 1.1;
@@ -266,6 +266,7 @@
     .kaki ul { flex-direction: column; align-items: center; }
     .kaki li + li { border-left: 0; }
     .kaki a { padding: 0.7rem 1rem; }
+    .halaman { padding-block: 2rem 3rem; }
   }
 </style>
 </head>
@@ -302,9 +303,10 @@
 <footer class="kaki">
   <div class="bungkus lebar">
     <ul aria-label="Informasi situs">
-      <li><a href="#/tentang">Tentang HCK</a></li>
-      <li><a href="#/privasi">Kebijakan Privasi</a></li>
-      <li><a href="#/disclaimer">Disclaimer</a></li>
+      <li><a href="tentang.html">Tentang Kami</a></li>
+      <li><a href="kontak.html">Kontak</a></li>
+      <li><a href="privacy-policy.html">Privacy Policy</a></li>
+      <li><a href="disclaimer.html">Disclaimer</a></li>
     </ul>
     <p>&copy; 2026 Hanya Catatan Kecil</p>
   </div>
@@ -595,45 +597,6 @@
     return { html: html, judul: a.judul + " | " + NAMA_SITUS, menu: k.id, slug: a.slug };
   }
 
-  function tampilTentang() {
-    return { judul: "Tentang HCK", menu: "", html:
-      '<div class="prosa"><h1 class="judul-bagian">Tentang HCK</h1>' +
-      '<p>Hanya Catatan Kecil (HCK) adalah ruang untuk menulis pelan-pelan tentang hal-hal besar: filsafat, hubungan agama dan akal, politik, ekonomi, dan kisah manusia sehari-hari.</p>' +
-      '<p>Tulisan di sini tidak berusaha memberi kata akhir. Tujuannya sederhana, yaitu mengajak pembaca berpikir kritis, memeriksa alasan di balik keyakinan, dan tetap ramah kepada orang yang berpendapat lain.</p>' +
-      '<p>Semua tulisan ditulis oleh ' + esc(PENULIS) + '.</p></div>' };
-  }
-
-  function tampilPrivasi() {
-    return { judul: "Kebijakan Privasi", menu: "", html:
-      '<div class="prosa"><h1 class="judul-bagian">Kebijakan Privasi</h1>' +
-      '<p>Halaman ini menjelaskan bagaimana Hanya Catatan Kecil memperlakukan informasi pengunjung.</p>' +
-      '<h2>Informasi yang dikumpulkan</h2>' +
-      '<p>Situs ini tidak meminta Anda membuat akun atau mengisi data pribadi untuk membaca. Server dan layanan analitik dapat mencatat data teknis umum, seperti jenis peramban, halaman yang dibuka, dan waktu kunjungan.</p>' +
-      '<h2>Statistik kunjungan</h2>' +
-      '<p>Situs ini menghitung jumlah kunjungan dan klik secara anonim, tanpa nama, alamat IP, atau data pribadi lain, untuk mengetahui tulisan mana yang dibaca. Peramban Anda menyimpan penanda kecil agar kunjungan yang sama tidak dihitung berulang dalam sehari.</p>' +
-      '<h2>Cookie dan iklan</h2>' +
-      '<p>Situs ini dapat menampilkan iklan dari Google AdSense. Google dan mitranya dapat memakai cookie untuk menayangkan iklan berdasarkan kunjungan Anda ke situs ini dan situs lain. Anda dapat mengatur atau menonaktifkan iklan yang dipersonalisasi melalui pengaturan iklan Google, dan mengatur cookie melalui peramban Anda.</p>' +
-      '<h2>Tautan ke situs lain</h2>' +
-      '<p>Tulisan dapat memuat tautan ke situs lain. HCK tidak bertanggung jawab atas kebijakan privasi maupun isi situs tersebut.</p>' +
-      '<h2>Perubahan kebijakan</h2>' +
-      '<p>Kebijakan ini dapat diperbarui sewaktu-waktu. Perubahan akan ditampilkan di halaman ini.</p>' +
-      '<h2>Kontak</h2>' +
-      '<p>Pertanyaan tentang privasi dapat dikirim ke alamat surel pengelola: [isi alamat surel Anda di sini].</p>' +
-      '<p class="catatan-draf">Ini naskah awal untuk dilengkapi. Sesuaikan dengan layanan yang benar-benar Anda pakai, dan pertimbangkan meminta nasihat hukum sebelum situs diterbitkan.</p></div>' };
-  }
-
-  function tampilDisclaimer() {
-    return { judul: "Disclaimer", menu: "", html:
-      '<div class="prosa"><h1 class="judul-bagian">Disclaimer</h1>' +
-      '<p>Tulisan di Hanya Catatan Kecil adalah pandangan pribadi penulis dan dimaksudkan sebagai bahan renungan serta diskusi.</p>' +
-      '<ul>' +
-      '<li>Isi situs bukan nasihat hukum, keuangan, medis, atau keagamaan yang mengikat.</li>' +
-      '<li>Penulis berusaha akurat, tetapi tidak menjamin bahwa semua informasi selalu lengkap atau terbaru.</li>' +
-      '<li>Iklan yang tampil disediakan pihak ketiga dan tidak selalu mencerminkan pandangan penulis.</li>' +
-      '<li>Tanggapan dan kritik yang santun selalu diterima. Jika ada kekeliruan, penulis akan memperbaikinya.</li>' +
-      '</ul></div>' };
-  }
-
   /* ---------------------------------------------------------------
      Menu dan routing
      --------------------------------------------------------------- */
@@ -736,9 +699,10 @@
         try { kueri = decodeURIComponent(bagian.slice(1).join("/")); } catch (e) { kueri = bagian.slice(1).join("/"); }
         hasil = tampilCari(kueri);
         break;
-      case "tentang": hasil = tampilTentang(); break;
-      case "privasi": hasil = tampilPrivasi(); break;
-      case "disclaimer": hasil = tampilDisclaimer(); break;
+      case "tentang": location.replace("tentang.html"); return;
+      case "kontak": location.replace("kontak.html"); return;
+      case "privasi": location.replace("privacy-policy.html"); return;
+      case "disclaimer": location.replace("disclaimer.html"); return;
       default: hasil = tampilBeranda();
     }
     document.getElementById("isi-halaman").innerHTML = hasil.html;
